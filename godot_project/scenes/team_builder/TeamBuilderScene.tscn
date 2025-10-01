@@ -1,0 +1,331 @@
+[gd_scene load_steps=2 format=3 uid="uid://d2k8m5n7p6qvx"]
+
+[ext_resource type="Script" path="res://scripts/ui/TeamBuilderController.gd" id="1_controller"]
+
+[node name="TeamBuilder" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_controller")
+
+[node name="BackgroundLayer" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="Background" type="ColorRect" parent="BackgroundLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.094, 0.094, 0.125, 1)
+
+[node name="MainContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftPanel" type="PanelContainer" parent="MainContainer"]
+custom_minimum_size = Vector2(380, 0)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MainContainer/LeftPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainContainer/LeftPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="MainContainer/LeftPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "POKEMON BROWSER"
+horizontal_alignment = 1
+
+[node name="SearchBar" type="LineEdit" parent="MainContainer/LeftPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Search Pokemon..."
+
+[node name="FilterContainer" type="HBoxContainer" parent="MainContainer/LeftPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TypeFilter" type="OptionButton" parent="MainContainer/LeftPanel/MarginContainer/VBoxContainer/FilterContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "All Types"
+
+[node name="GenFilter" type="OptionButton" parent="MainContainer/LeftPanel/MarginContainer/VBoxContainer/FilterContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "All Gens"
+
+[node name="PokemonScroll" type="ScrollContainer" parent="MainContainer/LeftPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="PokemonGrid" type="GridContainer" parent="MainContainer/LeftPanel/MarginContainer/VBoxContainer/PokemonScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 2
+
+[node name="CenterPanel" type="PanelContainer" parent="MainContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="MainContainer/CenterPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainContainer/CenterPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "POKEMON EDITOR"
+horizontal_alignment = 1
+
+[node name="PokemonName" type="Label" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Select a Pokemon"
+horizontal_alignment = 1
+
+[node name="EditorScroll" type="ScrollContainer" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="EditorContent" type="VBoxContainer" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="BasicInfoSection" type="VBoxContainer" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent"]
+layout_mode = 2
+
+[node name="SectionTitle" type="Label" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/BasicInfoSection"]
+layout_mode = 2
+text = "Basic Info"
+
+[node name="LevelContainer" type="HBoxContainer" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/BasicInfoSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/BasicInfoSection/LevelContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Level:"
+
+[node name="LevelSpinBox" type="SpinBox" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/BasicInfoSection/LevelContainer"]
+layout_mode = 2
+min_value = 1.0
+max_value = 100.0
+value = 50.0
+
+[node name="NicknameContainer" type="HBoxContainer" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/BasicInfoSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/BasicInfoSection/NicknameContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Nickname:"
+
+[node name="NicknameEdit" type="LineEdit" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/BasicInfoSection/NicknameContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Optional"
+
+[node name="NatureSection" type="VBoxContainer" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent"]
+layout_mode = 2
+
+[node name="SectionTitle" type="Label" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/NatureSection"]
+layout_mode = 2
+text = "Nature"
+
+[node name="NatureSelect" type="OptionButton" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/NatureSection"]
+layout_mode = 2
+
+[node name="AbilitySection" type="VBoxContainer" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent"]
+layout_mode = 2
+
+[node name="SectionTitle" type="Label" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/AbilitySection"]
+layout_mode = 2
+text = "Ability"
+
+[node name="AbilitySelect" type="OptionButton" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/AbilitySection"]
+layout_mode = 2
+
+[node name="MovesSection" type="VBoxContainer" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent"]
+layout_mode = 2
+
+[node name="SectionTitle" type="Label" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/MovesSection"]
+layout_mode = 2
+text = "Moves"
+
+[node name="MovesGrid" type="GridContainer" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/MovesSection"]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 2
+
+[node name="Move1" type="Button" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/MovesSection/MovesGrid"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "- Select Move -"
+
+[node name="Move2" type="Button" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/MovesSection/MovesGrid"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "- Select Move -"
+
+[node name="Move3" type="Button" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/MovesSection/MovesGrid"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "- Select Move -"
+
+[node name="Move4" type="Button" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/MovesSection/MovesGrid"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "- Select Move -"
+
+[node name="ItemSection" type="VBoxContainer" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent"]
+layout_mode = 2
+
+[node name="SectionTitle" type="Label" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/ItemSection"]
+layout_mode = 2
+text = "Held Item"
+
+[node name="ItemSelect" type="OptionButton" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/ItemSection"]
+layout_mode = 2
+
+[node name="StatSlidersContainer" type="VBoxContainer" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent"]
+layout_mode = 2
+
+[node name="ActionButtons" type="HBoxContainer" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ClearButton" type="Button" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/ActionButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Clear"
+
+[node name="AddToTeamButton" type="Button" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/ActionButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Add to Team"
+
+[node name="RightPanel" type="PanelContainer" parent="MainContainer"]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MainContainer/RightPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainContainer/RightPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="MainContainer/RightPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "YOUR TEAM"
+horizontal_alignment = 1
+
+[node name="TeamSlots" type="VBoxContainer" parent="MainContainer/RightPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="Slot1" type="PanelContainer" parent="MainContainer/RightPanel/MarginContainer/VBoxContainer/TeamSlots"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainContainer/RightPanel/MarginContainer/VBoxContainer/TeamSlots/Slot1"]
+layout_mode = 2
+text = "Empty Slot"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Slot2" type="PanelContainer" parent="MainContainer/RightPanel/MarginContainer/VBoxContainer/TeamSlots"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainContainer/RightPanel/MarginContainer/VBoxContainer/TeamSlots/Slot2"]
+layout_mode = 2
+text = "Empty Slot"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Slot3" type="PanelContainer" parent="MainContainer/RightPanel/MarginContainer/VBoxContainer/TeamSlots"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainContainer/RightPanel/MarginContainer/VBoxContainer/TeamSlots/Slot3"]
+layout_mode = 2
+text = "Empty Slot"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Slot4" type="PanelContainer" parent="MainContainer/RightPanel/MarginContainer/VBoxContainer/TeamSlots"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainContainer/RightPanel/MarginContainer/VBoxContainer/TeamSlots/Slot4"]
+layout_mode = 2
+text = "Empty Slot"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Slot5" type="PanelContainer" parent="MainContainer/RightPanel/MarginContainer/VBoxContainer/TeamSlots"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainContainer/RightPanel/MarginContainer/VBoxContainer/TeamSlots/Slot5"]
+layout_mode = 2
+text = "Empty Slot"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Slot6" type="PanelContainer" parent="MainContainer/RightPanel/MarginContainer/VBoxContainer/TeamSlots"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainContainer/RightPanel/MarginContainer/VBoxContainer/TeamSlots/Slot6"]
+layout_mode = 2
+text = "Empty Slot"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TeamActions" type="VBoxContainer" parent="MainContainer/RightPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SaveButton" type="Button" parent="MainContainer/RightPanel/MarginContainer/VBoxContainer/TeamActions"]
+layout_mode = 2
+text = "Save Team"
+
+[node name="LoadButton" type="Button" parent="MainContainer/RightPanel/MarginContainer/VBoxContainer/TeamActions"]
+layout_mode = 2
+text = "Load Team"
