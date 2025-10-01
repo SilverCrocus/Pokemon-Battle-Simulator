@@ -1,0 +1,142 @@
+# Godot 4 files
+.godot/
+.import/
+export.cfg
+export_presets.cfg
+*.translation
+
+# Godot-specific
+*.import
+*.md5
+
+# Mono-specific (if using C#)
+.mono/
+data_*/
+mono_crash.*.json
+
+# System/tool-specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# uv (Python package manager)
+.venv/
+.uv/
+uv.lock
+
+# Virtual environments
+venv/
+ENV/
+env/
+.virtualenv/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# Data cache (keep structure, ignore contents)
+data_pipeline/cache/*
+!data_pipeline/cache/.gitkeep
+
+# Godot resources (generated)
+godot_project/resources/pokemon/*.tres
+godot_project/resources/moves/*.tres
+godot_project/resources/abilities/*.tres
+godot_project/resources/items/*.tres
+!godot_project/resources/**/.gitkeep
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# OS generated
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*~
+
+# Build artifacts
+builds/
+exports/
+*.pck
+*.zip
+*.tar.gz
+*.exe
+*.dmg
+*.app
+*.apk
+*.aab
+
+# Secrets & credentials
+.env
+.env.local
+*.key
+*.pem
+credentials.json
+secrets/
+
+# Database files (if any)
+*.db
+*.sqlite
+*.sqlite3
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Documentation build
+docs/_build/
+site/
