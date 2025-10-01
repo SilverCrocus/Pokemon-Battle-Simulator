@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://d2k9m7n5p8qrl"]
+
+[ext_resource type="Script" path="res://scripts/ui/components/HPBar.gd" id="1_script"]
+
+[node name="HPBar" type="ProgressBar"]
+custom_minimum_size = Vector2(0, 8)
+value = 75.0
+show_percentage = false
+script = ExtResource("1_script")

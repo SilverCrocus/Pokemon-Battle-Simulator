@@ -1,0 +1,33 @@
+[gd_scene load_steps=3 format=3 uid="uid://b6k5m8n2p9wvx"]
+
+[ext_resource type="Script" path="res://scripts/ui/components/MoveSelectionUI.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://c8j4k2m9n7pql" path="res://scenes/components/MoveButton.tscn" id="2_move_button"]
+
+[node name="MoveSelectionUI" type="PanelContainer"]
+custom_minimum_size = Vector2(480, 180)
+script = ExtResource("1_script")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 12
+columns = 2
+
+[node name="MoveButton1" parent="MarginContainer/GridContainer" instance=ExtResource("2_move_button")]
+layout_mode = 2
+
+[node name="MoveButton2" parent="MarginContainer/GridContainer" instance=ExtResource("2_move_button")]
+layout_mode = 2
+
+[node name="MoveButton3" parent="MarginContainer/GridContainer" instance=ExtResource("2_move_button")]
+layout_mode = 2
+
+[node name="MoveButton4" parent="MarginContainer/GridContainer" instance=ExtResource("2_move_button")]
+layout_mode = 2

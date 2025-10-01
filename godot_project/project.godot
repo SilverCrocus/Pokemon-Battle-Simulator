@@ -21,6 +21,8 @@ config/features=PackedStringArray("4.5", "GL Compatibility")
 DataManager="*res://autoloads/DataManager.gd"
 TypeChart="*res://autoloads/TypeChart.gd"
 BattleController="*res://autoloads/BattleController.gd"
+BattleEvents="*res://autoloads/BattleEvents.gd"
+BattleTheme="*res://scripts/ui/theme/BattleTheme.gd"
 
 [display]
 

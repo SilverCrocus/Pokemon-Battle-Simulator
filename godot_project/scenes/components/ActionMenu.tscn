@@ -1,0 +1,40 @@
+[gd_scene load_steps=2 format=3 uid="uid://c5k8m3n7p4qvw"]
+
+[ext_resource type="Script" path="res://scripts/ui/components/ActionMenu.gd" id="1_script"]
+
+[node name="ActionMenu" type="PanelContainer"]
+custom_minimum_size = Vector2(480, 180)
+script = ExtResource("1_script")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 12
+columns = 2
+
+[node name="FightButton" type="Button" parent="MarginContainer/GridContainer"]
+custom_minimum_size = Vector2(220, 70)
+layout_mode = 2
+text = "FIGHT"
+
+[node name="PokemonButton" type="Button" parent="MarginContainer/GridContainer"]
+custom_minimum_size = Vector2(220, 70)
+layout_mode = 2
+text = "POKEMON"
+
+[node name="BagButton" type="Button" parent="MarginContainer/GridContainer"]
+custom_minimum_size = Vector2(220, 70)
+layout_mode = 2
+text = "BAG"
+
+[node name="RunButton" type="Button" parent="MarginContainer/GridContainer"]
+custom_minimum_size = Vector2(220, 70)
+layout_mode = 2
+text = "RUN"

@@ -1,0 +1,26 @@
+[gd_scene load_steps=2 format=3 uid="uid://d7m3n6p4q2kxw"]
+
+[ext_resource type="Script" path="res://scripts/ui/components/BattleLog.gd" id="1_script"]
+
+[node name="BattleLog" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 120)
+script = ExtResource("1_script")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 12
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="LogLabel" type="RichTextLabel" parent="MarginContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
+fit_content = true
+scroll_following = true

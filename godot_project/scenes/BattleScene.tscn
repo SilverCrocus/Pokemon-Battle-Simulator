@@ -1,0 +1,112 @@
+[gd_scene load_steps=7 format=3 uid="uid://bvxj5k7qm2w3r"]
+
+[ext_resource type="Script" path="res://scripts/ui/BattleSceneController.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://ct5m8n4p1w9kj" path="res://scenes/components/PokemonInfoPanel.tscn" id="2_opponent_info"]
+[ext_resource type="PackedScene" uid="uid://ct5m8n4p1w9kj" path="res://scenes/components/PokemonInfoPanel.tscn" id="3_player_info"]
+[ext_resource type="PackedScene" uid="uid://d7m3n6p4q2kxw" path="res://scenes/components/BattleLog.tscn" id="4_battle_log"]
+[ext_resource type="PackedScene" uid="uid://c5k8m3n7p4qvw" path="res://scenes/components/ActionMenu.tscn" id="5_action_menu"]
+[ext_resource type="PackedScene" uid="uid://b6k5m8n2p9wvx" path="res://scenes/components/MoveSelectionUI.tscn" id="6_move_selection"]
+
+[node name="BattleScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="BackgroundLayer" type="CanvasLayer" parent="."]
+layer = -2
+
+[node name="BattleBackground" type="ColorRect" parent="BackgroundLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.094, 0.094, 0.125, 1)
+
+[node name="PokemonLayer" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="OpponentPokemonPosition" type="Marker2D" parent="PokemonLayer"]
+position = Vector2(700, 180)
+gizmo_extents = 48.0
+
+[node name="PlayerPokemonPosition" type="Marker2D" parent="PokemonLayer"]
+position = Vector2(192, 384)
+gizmo_extents = 48.0
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="TopBar" type="Control" parent="UILayer"]
+custom_minimum_size = Vector2(400, 100)
+layout_mode = 3
+anchors_preset = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 416.0
+offset_bottom = 116.0
+
+[node name="OpponentInfoPanel" parent="UILayer/TopBar" instance=ExtResource("2_opponent_info")]
+layout_mode = 1
+
+[node name="BottomBar" type="Control" parent="UILayer"]
+custom_minimum_size = Vector2(400, 100)
+layout_mode = 3
+anchors_preset = 0
+offset_left = 560.0
+offset_top = 300.0
+offset_right = 960.0
+offset_bottom = 400.0
+
+[node name="PlayerInfoPanel" parent="UILayer/BottomBar" instance=ExtResource("3_player_info")]
+layout_mode = 1
+
+[node name="BattleUIContainer" type="Control" parent="UILayer"]
+custom_minimum_size = Vector2(960, 192)
+layout_mode = 3
+anchors_preset = 0
+offset_top = 480.0
+offset_right = 960.0
+offset_bottom = 672.0
+
+[node name="BattleLog" parent="UILayer/BattleUIContainer" instance=ExtResource("4_battle_log")]
+visible = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ActionMenu" parent="UILayer/BattleUIContainer" instance=ExtResource("5_action_menu")]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -90.0
+offset_right = 240.0
+offset_bottom = 90.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MoveSelectionUI" parent="UILayer/BattleUIContainer" instance=ExtResource("6_move_selection")]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -90.0
+offset_right = 240.0
+offset_bottom = 90.0
+grow_horizontal = 2
+grow_vertical = 2

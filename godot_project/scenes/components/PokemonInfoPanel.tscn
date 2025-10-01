@@ -1,0 +1,63 @@
+[gd_scene load_steps=3 format=3 uid="uid://ct5m8n4p1w9kj"]
+
+[ext_resource type="Script" path="res://scripts/ui/components/PokemonInfoPanel.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://d2k9m7n5p8qrl" path="res://scenes/components/HPBar.tscn" id="2_hpbar"]
+
+[node name="PokemonInfoPanel" type="PanelContainer"]
+custom_minimum_size = Vector2(320, 90)
+script = ExtResource("1_script")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TopRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "PIKACHU"
+vertical_alignment = 1
+
+[node name="GenderLabel" type="Label" parent="MarginContainer/VBoxContainer/TopRow"]
+layout_mode = 2
+text = "♂"
+vertical_alignment = 1
+
+[node name="LevelLabel" type="Label" parent="MarginContainer/VBoxContainer/TopRow"]
+layout_mode = 2
+text = "Lv.50"
+vertical_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="MarginContainer/VBoxContainer/TopRow"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+text = "BRN"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="HPBarContainer" type="Control" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="HPBar" parent="MarginContainer/VBoxContainer/HPBarContainer" instance=ExtResource("2_hpbar")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HPTextLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "125 / 200"
+horizontal_alignment = 2
