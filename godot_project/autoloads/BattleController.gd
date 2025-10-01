@@ -34,6 +34,10 @@ var opponent_action: BattleActionScript = null
 # Battle configuration
 var battle_seed: int = 0
 
+# Team data for battle initialization (from main menu)
+var player_team_data = null  # Team JSON data
+var is_vs_ai: bool = false
+
 # ==================== Lifecycle ====================
 
 func _ready() -> void:
