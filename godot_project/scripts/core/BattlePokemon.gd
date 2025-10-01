@@ -304,12 +304,13 @@ func heal(amount: int) -> void:
 	current_hp = min(max_hp, current_hp + amount)
 
 
-func apply_status(new_status: String) -> bool:
+func apply_status(new_status: String, rng: RandomNumberGenerator = null) -> bool:
 	"""
 	Apply a status condition to the Pokemon.
 
 	Args:
 		new_status: Status condition to apply
+		rng: RandomNumberGenerator for deterministic sleep duration (optional)
 
 	Returns:
 		true if status was applied, false if Pokemon already has a status
@@ -325,7 +326,10 @@ func apply_status(new_status: String) -> bool:
 
 	# Initialize status counter for sleep (1-3 turns)
 	if new_status == "sleep":
-		status_counter = randi_range(1, 3)
+		if rng != null:
+			status_counter = rng.randi_range(1, 3)
+		else:
+			status_counter = randi_range(1, 3)
 
 	return true
 
@@ -336,9 +340,12 @@ func clear_status() -> void:
 	status_counter = 0
 
 
-func can_move() -> bool:
+func can_move(rng: RandomNumberGenerator = null) -> bool:
 	"""
 	Check if the Pokemon can execute a move this turn.
+
+	Args:
+		rng: RandomNumberGenerator for deterministic status checks (optional)
 
 	Returns:
 		true if Pokemon can move, false if prevented by status
@@ -349,7 +356,8 @@ func can_move() -> bool:
 	match status:
 		"freeze":
 			# 20% chance to thaw each turn
-			if randf() < 0.2:
+			var thaw_chance = rng.randf() if rng != null else randf()
+			if thaw_chance < 0.2:
 				clear_status()
 				return true
 			return false
@@ -365,7 +373,8 @@ func can_move() -> bool:
 
 		"paralysis":
 			# 25% chance to be fully paralyzed
-			return randf() >= 0.25
+			var para_chance = rng.randf() if rng != null else randf()
+			return para_chance >= 0.25
 
 		_:
 			return true

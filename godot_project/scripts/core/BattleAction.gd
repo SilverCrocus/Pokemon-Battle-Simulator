@@ -92,7 +92,7 @@ static func new_move_action(p_move_index: int, p_target_index: int = 0) -> Battl
 	Returns:
 		New BattleAction configured for using a move
 	"""
-	return BattleAction.new(ActionType.MOVE, p_move_index, p_target_index, -1)
+	return load("res://scripts/core/BattleAction.gd").new(ActionType.MOVE, p_move_index, p_target_index, -1)
 
 
 static func new_switch_action(p_switch_index: int) -> BattleAction:
@@ -105,7 +105,7 @@ static func new_switch_action(p_switch_index: int) -> BattleAction:
 	Returns:
 		New BattleAction configured for switching Pokemon
 	"""
-	return BattleAction.new(ActionType.SWITCH, -1, -1, p_switch_index)
+	return load("res://scripts/core/BattleAction.gd").new(ActionType.SWITCH, -1, -1, p_switch_index)
 
 
 static func new_forfeit_action() -> BattleAction:
@@ -115,7 +115,7 @@ static func new_forfeit_action() -> BattleAction:
 	Returns:
 		New BattleAction configured for forfeiting the battle
 	"""
-	return BattleAction.new(ActionType.FORFEIT, -1, -1, -1)
+	return load("res://scripts/core/BattleAction.gd").new(ActionType.FORFEIT, -1, -1, -1)
 
 
 func is_move() -> bool:
@@ -191,7 +191,7 @@ func duplicate_action() -> BattleAction:
 	Returns:
 		New BattleAction with identical properties
 	"""
-	return BattleAction.new(action_type, move_index, target_index, switch_index)
+	return load("res://scripts/core/BattleAction.gd").new(action_type, move_index, target_index, switch_index)
 
 
 func equals(other: BattleAction) -> bool:
@@ -240,7 +240,7 @@ static func from_dict(data: Dictionary) -> BattleAction:
 	Returns:
 		New BattleAction reconstructed from dictionary
 	"""
-	return BattleAction.new(
+	return load("res://scripts/core/BattleAction.gd").new(
 		data.get("action_type", ActionType.FORFEIT),
 		data.get("move_index", -1),
 		data.get("target_index", -1),

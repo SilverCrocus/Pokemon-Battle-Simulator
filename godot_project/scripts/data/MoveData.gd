@@ -21,6 +21,12 @@ extends Resource
 @export var short_effect: String = ""
 @export var effect_chance: int = 0  # Percentage chance for secondary effect
 
+# Status conditions (Phase 1 Week 5)
+@export var status_effect: String = ""  # "burn", "poison", "paralysis", "freeze", "sleep", "badly_poison", ""
+@export var stat_changes: Dictionary = {}  # {"atk": 1, "def": -1} etc.
+@export var targets_user: bool = false  # true for self-buffs like Swords Dance
+@export var high_crit_ratio: bool = false  # true for moves like Slash, Razor Leaf
+
 # Target
 @export var target: String = ""  # "selected-pokemon", "all-opponents", etc.
 
@@ -67,3 +73,25 @@ func never_misses() -> bool:
 func has_secondary_effect() -> bool:
 	"""Check if move has a secondary effect."""
 	return effect_chance > 0
+
+
+func applies_status() -> bool:
+	"""Check if move can apply a status condition."""
+	return status_effect != "" and effect_chance > 0
+
+
+func get_status_inflict_chance() -> int:
+	"""
+	Get percentage chance to inflict status.
+
+	Returns:
+		Percentage chance (0-100), or 0 if no status effect
+	"""
+	if status_effect == "":
+		return 0
+	return effect_chance
+
+
+func changes_stats() -> bool:
+	"""Check if move changes stat stages."""
+	return not stat_changes.is_empty()

@@ -5,7 +5,7 @@ extends RefCounted
 class_name DamageCalculator
 
 ## Critical hit chance by stage
-const CRIT_CHANCES := {
+const CRIT_CHANCES = {
 	0: 0.04166667,  # 1/24
 	1: 0.125,       # 1/8
 	2: 0.5,         # 1/2
@@ -13,23 +13,23 @@ const CRIT_CHANCES := {
 }
 
 ## Critical hit damage multiplier (Gen 6-9)
-const CRIT_MULTIPLIER := 1.5
+const CRIT_MULTIPLIER = 1.5
 
 ## STAB multiplier (when move type matches attacker type)
-const STAB_MULTIPLIER := 1.5
+const STAB_MULTIPLIER = 1.5
 
 ## STAB multiplier with Adaptability ability
-const ADAPTABILITY_STAB := 2.0
+const ADAPTABILITY_STAB = 2.0
 
 ## Burn physical damage reduction
-const BURN_MULTIPLIER := 0.5
+const BURN_MULTIPLIER = 0.5
 
 ## Multi-target move damage reduction in doubles
-const MULTI_TARGET_MULTIPLIER := 0.75
+const MULTI_TARGET_MULTIPLIER = 0.75
 
 ## Weather boost/reduction multipliers
-const WEATHER_BOOST := 1.5
-const WEATHER_REDUCE := 0.5
+const WEATHER_BOOST = 1.5
+const WEATHER_REDUCE = 0.5
 
 ## Calculates base damage using Gen 5-9 formula (before modifiers)
 ## BaseDamage = floor(floor(floor(floor(2 × Level ÷ 5 + 2) × Power × A ÷ D) ÷ 50) + 2)
@@ -50,9 +50,9 @@ static func calculate_base_damage(level: int, power: int, attack: int, defense: 
 		return 0
 
 	# BaseDamage = floor(floor(floor(floor(2 × Level ÷ 5 + 2) × Power × A ÷ D) ÷ 50) + 2)
-	var level_calc := floori(2 * level / 5) + 2
-	var power_calc := floori(level_calc * power * attack / defense)
-	var base_damage := floori(power_calc / 50) + 2
+	var level_calc = floori(2 * level / 5) + 2
+	var power_calc = floori(level_calc * power * attack / defense)
+	var base_damage = floori(power_calc / 50) + 2
 
 	return base_damage
 
@@ -120,7 +120,7 @@ static func apply_modifiers(base_damage: int, modifiers: Dictionary) -> int:
 	if base_damage == 0:
 		return 0
 
-	var damage := float(base_damage)
+	var damage = float(base_damage)
 
 	# Targets (multi-target in doubles)
 	if modifiers.get("is_multi_target", false):
@@ -142,7 +142,7 @@ static func apply_modifiers(base_damage: int, modifiers: Dictionary) -> int:
 		damage *= CRIT_MULTIPLIER
 
 	# Random factor (85-100)
-	var random_factor := modifiers.get("random_factor", 1.0)
+	var random_factor = modifiers.get("random_factor", 1.0)
 	assert(random_factor >= 0.85 and random_factor <= 1.0, "Random factor must be 0.85-1.0")
 	damage *= random_factor
 
@@ -174,14 +174,14 @@ static func apply_modifiers(base_damage: int, modifiers: Dictionary) -> int:
 ## @return: Array [min_damage, max_damage]
 static func damage_range(base_damage: int, modifiers: Dictionary) -> Array:
 	# Calculate with min random (85)
-	var min_modifiers := modifiers.duplicate()
+	var min_modifiers = modifiers.duplicate()
 	min_modifiers["random_factor"] = 0.85
-	var min_damage := apply_modifiers(base_damage, min_modifiers)
+	var min_damage = apply_modifiers(base_damage, min_modifiers)
 
 	# Calculate with max random (100)
-	var max_modifiers := modifiers.duplicate()
+	var max_modifiers = modifiers.duplicate()
 	max_modifiers["random_factor"] = 1.0
-	var max_damage := apply_modifiers(base_damage, max_modifiers)
+	var max_damage = apply_modifiers(base_damage, max_modifiers)
 
 	return [min_damage, max_damage]
 
@@ -218,7 +218,7 @@ static func calculate_damage(params: Dictionary) -> int:
 	assert("is_physical" in params, "is_physical is required")
 
 	# Calculate base damage
-	var base_damage := calculate_base_damage(
+	var base_damage = calculate_base_damage(
 		params["level"],
 		params["power"],
 		params["attack"],
@@ -229,7 +229,7 @@ static func calculate_damage(params: Dictionary) -> int:
 		return 0
 
 	# Build modifiers dictionary
-	var modifiers := {
+	var modifiers = {
 		"is_multi_target": params.get("is_multi_target", false),
 		"weather_modifier": get_weather_modifier(
 			params["move_type"],
@@ -263,7 +263,7 @@ static func calculate_damage(params: Dictionary) -> int:
 ## @return: Array [min_damage, max_damage]
 static func calculate_damage_range(params: Dictionary) -> Array:
 	# Calculate base damage
-	var base_damage := calculate_base_damage(
+	var base_damage = calculate_base_damage(
 		params["level"],
 		params["power"],
 		params["attack"],
@@ -274,7 +274,7 @@ static func calculate_damage_range(params: Dictionary) -> Array:
 		return [0, 0]
 
 	# Build modifiers (same as calculate_damage but without random_factor)
-	var modifiers := {
+	var modifiers = {
 		"is_multi_target": params.get("is_multi_target", false),
 		"weather_modifier": get_weather_modifier(
 			params["move_type"],
@@ -304,7 +304,7 @@ static func calculate_damage_range(params: Dictionary) -> Array:
 ##
 ## @return: Random float between 0.85 and 1.0
 static func get_random_damage_roll() -> float:
-	var random_int := randi_range(85, 100)
+	var random_int = randi_range(85, 100)
 	return random_int / 100.0
 
 ## Determines if an attack is a critical hit based on crit stage
@@ -312,7 +312,7 @@ static func get_random_damage_roll() -> float:
 ## @param crit_stage: Critical hit stage (0-3+)
 ## @return: true if critical hit occurs
 static func roll_critical_hit(crit_stage: int) -> bool:
-	var chance := calculate_critical_chance(crit_stage)
+	var chance = calculate_critical_chance(crit_stage)
 	if chance >= 1.0:
 		return true
 	return randf() < chance

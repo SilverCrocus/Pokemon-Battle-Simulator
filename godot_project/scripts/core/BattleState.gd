@@ -1,6 +1,9 @@
 class_name BattleState
 extends RefCounted
 
+## Preload dependencies
+const BattlePokemonScript = preload("res://scripts/core/BattlePokemon.gd")
+
 ## Complete battle state
 ##
 ## Represents the entire state of a Pokemon battle including both teams, active Pokemon,
@@ -38,10 +41,10 @@ var terrain: String = "none"
 var terrain_turns_remaining: int = 0
 
 ## Player 1's team (up to 6 Pokemon)
-var team1: Array[BattlePokemon] = []
+var team1 = []  # Array of BattlePokemon
 
 ## Player 2's team (up to 6 Pokemon)
-var team2: Array[BattlePokemon] = []
+var team2 = []  # Array of BattlePokemon
 
 ## Index of Player 1's active Pokemon (0-5)
 var active1_index: int = 0
@@ -135,7 +138,7 @@ func _validate_team(pokemon_team: Array) -> void:
 		"BattleState: team must have 1-6 Pokemon, got %d" % pokemon_team.size())
 
 	for pokemon in pokemon_team:
-		assert(pokemon is BattlePokemon,
+		assert(pokemon.get_script() == BattlePokemonScript,
 			"BattleState: all team members must be BattlePokemon instances")
 		assert(not pokemon.is_fainted(),
 			"BattleState: team cannot contain fainted Pokemon (%s)" % pokemon.get_display_name())
@@ -155,7 +158,7 @@ func begin_battle() -> void:
 	battle_status = BattleStatus.IN_PROGRESS
 
 
-func get_active_pokemon(player: int) -> BattlePokemon:
+func get_active_pokemon(player: int):  # Returns BattlePokemon
 	"""
 	Get the active Pokemon for a player.
 
@@ -175,7 +178,7 @@ func get_active_pokemon(player: int) -> BattlePokemon:
 		return team2[active2_index]
 
 
-func get_inactive_pokemon(player: int) -> Array[BattlePokemon]:
+func get_inactive_pokemon(player: int):  # Returns Array of BattlePokemon
 	"""
 	Get all non-active Pokemon for a player that can be switched in.
 
@@ -187,7 +190,7 @@ func get_inactive_pokemon(player: int) -> Array[BattlePokemon]:
 	"""
 	assert(player == 1 or player == 2, "BattleState: player must be 1 or 2, got %d" % player)
 
-	var inactive: Array[BattlePokemon] = []
+	var inactive = []  # Array of BattlePokemon
 	var team = team1 if player == 1 else team2
 	var active_index = active1_index if player == 1 else active2_index
 
@@ -198,7 +201,7 @@ func get_inactive_pokemon(player: int) -> Array[BattlePokemon]:
 	return inactive
 
 
-func get_team(player: int) -> Array[BattlePokemon]:
+func get_team(player: int):  # Returns Array of BattlePokemon
 	"""
 	Get a player's full team.
 
@@ -444,7 +447,7 @@ func _get_status_string() -> String:
 			return "Unknown"
 
 
-func _count_alive(team: Array[BattlePokemon]) -> int:
+func _count_alive(team) -> int:  # Array of BattlePokemon parameter
 	"""Count non-fainted Pokemon in a team."""
 	var count = 0
 	for pokemon in team:
@@ -481,7 +484,7 @@ func clone() -> BattleState:
 	Returns:
 		New BattleState with identical properties
 	"""
-	var new_state = BattleState.new(rng_seed)
+	var new_state = get_script().new(rng_seed)
 	new_state.turn_number = turn_number
 	new_state.weather = weather
 	new_state.weather_turns_remaining = weather_turns_remaining
