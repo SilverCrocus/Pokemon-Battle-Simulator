@@ -5,6 +5,10 @@ extends VBoxContainer
 ## Provides EV and IV sliders for all 6 stats with validation and presets.
 ## Shows real-time stat calculations based on base stats, IVs, EVs, nature, and level.
 
+# ==================== Preloads ====================
+
+const StatCalculatorScript = preload("res://scripts/utils/StatCalculator.gd")
+
 # ==================== Signals ====================
 
 signal stats_changed(evs: Dictionary, ivs: Dictionary)
@@ -347,11 +351,22 @@ func _update_all_sliders() -> void:
 
 
 func _update_stat_display() -> void:
-	"""Calculate and display final stats."""
+	"""Calculate and display final stats with nature indicators."""
 	for i in range(6):
 		var stat_key = STAT_KEYS[i]
 		var calculated_stat = _calculate_stat(stat_key)
-		stat_labels[i].text = str(calculated_stat)
+		var nature_mod = StatCalculatorScript.get_nature_modifier(current_nature, stat_key)
+
+		# Format with nature indicator
+		if nature_mod > 1.0:
+			stat_labels[i].text = "%d ↑" % calculated_stat
+			stat_labels[i].add_theme_color_override("font_color", Color(0.4, 0.9, 0.4))  # Green
+		elif nature_mod < 1.0:
+			stat_labels[i].text = "%d ↓" % calculated_stat
+			stat_labels[i].add_theme_color_override("font_color", Color(0.9, 0.4, 0.4))  # Red
+		else:
+			stat_labels[i].text = str(calculated_stat)
+			stat_labels[i].add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))  # White
 
 
 func _calculate_stat(stat_key: String) -> int:
@@ -380,7 +395,4 @@ func _calculate_stat(stat_key: String) -> int:
 
 func _get_nature_modifier(stat_key: String) -> float:
 	"""Get nature modifier for a stat (0.9, 1.0, or 1.1)."""
-	# Nature modifiers (simplified - would need full nature data)
-	# For now, return 1.0 (neutral)
-	# TODO: Implement full nature system
-	return 1.0
+	return StatCalculatorScript.get_nature_modifier(current_nature, stat_key)
