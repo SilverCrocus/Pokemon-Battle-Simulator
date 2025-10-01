@@ -211,12 +211,114 @@ func _start_battle_with_saved_team() -> void:
 
 	var team_data = json.data
 
-	# Store team data in BattleController for battle scene
+	# Create player team from JSON
+	var player_team = _create_team_from_json(team_data)
+	if not player_team or player_team.is_empty():
+		print("[MainMenu] Error: Could not create player team")
+		return
+
+	# Create simple AI opponent team
+	var ai_team = _create_simple_ai_team()
+	if not ai_team or ai_team.is_empty():
+		print("[MainMenu] Error: Could not create AI team")
+		return
+
+	# Start battle with AI
 	if BattleController:
-		BattleController.player_team_data = team_data
-		BattleController.is_vs_ai = true
+		# Use BattleAI.Difficulty.RANDOM (0) for now
+		BattleController.start_battle(player_team, ai_team, -1, true, 0)
 
 		# Switch to battle scene
 		get_tree().change_scene_to_file("res://scenes/battle/BattleScene.tscn")
 	else:
 		print("[MainMenu] Error: BattleController not found")
+
+
+func _create_team_from_json(team_data: Dictionary) -> Array:
+	"""
+	Create array of BattlePokemon from team JSON data.
+
+	@param team_data: Team JSON structure
+	@return: Array of BattlePokemon instances
+	"""
+	var team = []
+
+	const BattlePokemonScript = preload("res://scripts/core/BattlePokemon.gd")
+
+	for pokemon_data in team_data.pokemon:
+		var species = DataManager.get_pokemon(pokemon_data.species_id)
+		if not species:
+			continue
+
+		# Load moves
+		var moves = []
+		for move_id in pokemon_data.moves:
+			var move = DataManager.get_move(move_id)
+			if move:
+				moves.append(move)
+
+		# Create BattlePokemon
+		var battle_pokemon = BattlePokemonScript.new(
+			species,
+			pokemon_data.level,
+			pokemon_data.ivs,
+			pokemon_data.evs,
+			pokemon_data.nature,
+			moves,
+			pokemon_data.ability,
+			pokemon_data.item,
+			pokemon_data.nickname
+		)
+
+		team.append(battle_pokemon)
+
+	return team
+
+
+func _create_simple_ai_team() -> Array:
+	"""
+	Create a simple AI team for testing.
+	Uses a few Gen 1 Pokemon with random moves.
+
+	@return: Array of BattlePokemon instances
+	"""
+	var team = []
+
+	const BattlePokemonScript = preload("res://scripts/core/BattlePokemon.gd")
+
+	# Create 3 Pokemon for AI (Charizard, Blastoise, Venusaur)
+	var pokemon_ids = [6, 9, 3]  # Charizard, Blastoise, Venusaur
+
+	for pokemon_id in pokemon_ids:
+		var species = DataManager.get_pokemon(pokemon_id)
+		if not species:
+			continue
+
+		# Simple moveset
+		var moves = [
+			DataManager.get_move(33),   # Tackle
+			DataManager.get_move(52),   # Ember
+			DataManager.get_move(55),   # Water Gun
+			DataManager.get_move(22)    # Vine Whip
+		]
+
+		# Default competitive stats
+		var evs = {"hp": 4, "atk": 252, "def": 0, "spa": 0, "spd": 0, "spe": 252}
+		var ivs = {"hp": 31, "atk": 31, "def": 31, "spa": 31, "spd": 31, "spe": 31}
+
+		# Create BattlePokemon
+		var battle_pokemon = BattlePokemonScript.new(
+			species,
+			50,  # Level 50
+			ivs,
+			evs,
+			"Serious",  # Neutral nature
+			moves,
+			species.abilities[0] if species.abilities.size() > 0 else "No Ability",
+			"",  # No item
+			""   # No nickname
+		)
+
+		team.append(battle_pokemon)
+
+	return team

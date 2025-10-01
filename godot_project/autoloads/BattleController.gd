@@ -11,6 +11,7 @@ extends Node
 const BattleEngineScript = preload("res://scripts/core/BattleEngine.gd")
 const BattleActionScript = preload("res://scripts/core/BattleAction.gd")
 const BattlePokemonScript = preload("res://scripts/core/BattlePokemon.gd")
+const BattleAIScript = preload("res://scripts/core/BattleAI.gd")
 
 # ==================== Signals ====================
 
@@ -38,6 +39,10 @@ var battle_seed: int = 0
 var player_team_data = null  # Team JSON data
 var is_vs_ai: bool = false
 
+# AI opponent
+var ai_opponent: RefCounted = null  # BattleAI instance
+var ai_difficulty: int = 0  # BattleAI.Difficulty enum value
+
 # ==================== Lifecycle ====================
 
 func _ready() -> void:
@@ -47,13 +52,15 @@ func _ready() -> void:
 
 # ==================== Public Methods - Battle Management ====================
 
-func start_battle(team1: Array, team2: Array, seed: int = -1) -> void:
+func start_battle(team1: Array, team2: Array, seed: int = -1, use_ai: bool = false, difficulty: int = 0) -> void:
 	"""
 	Start a new battle with two teams.
 
 	@param team1: Player's team (array of BattlePokemon)
 	@param team2: Opponent's team (array of BattlePokemon)
 	@param seed: Random seed for determinism (-1 for random)
+	@param use_ai: Whether opponent is AI-controlled
+	@param difficulty: AI difficulty level (BattleAI.Difficulty enum)
 	"""
 	if is_battle_active:
 		push_error("[BattleController] Cannot start battle - battle already active")
@@ -70,6 +77,16 @@ func start_battle(team1: Array, team2: Array, seed: int = -1) -> void:
 
 	# Initialize battle
 	(engine as RefCounted).call("initialize_battle", team1, team2)
+
+	# Setup AI if requested
+	is_vs_ai = use_ai
+	if is_vs_ai:
+		ai_opponent = BattleAIScript.new()
+		ai_opponent.set_difficulty(difficulty)
+		ai_opponent.set_battle_state(engine.state)
+		ai_opponent.set_player_side(1)  # AI plays as team 2 (opponent)
+		ai_difficulty = difficulty
+		print("[BattleController] AI opponent initialized - Difficulty: %s" % ai_opponent.get_difficulty_name())
 
 	is_battle_active = true
 	print("[BattleController] Battle started with seed: %d" % battle_seed)
@@ -97,8 +114,10 @@ func end_battle() -> void:
 
 	print("[BattleController] Battle ended - Winner: Team %d" % winner)
 
-	# Clear engine
+	# Clear engine and AI
 	engine = null
+	ai_opponent = null
+	is_vs_ai = false
 
 
 func request_player_action() -> void:
@@ -164,13 +183,27 @@ func _execute_turn() -> void:
 
 func _get_opponent_action() -> BattleActionScript:
 	"""
-	Generate opponent's action (simple AI for now).
+	Generate opponent's action.
+	Uses AI if vs AI mode, otherwise placeholder.
 
 	@return: BattleAction for opponent
 	"""
-	# Simple AI: Always use move 0 (first move)
-	# TODO: Implement smarter AI in future phases
-	return BattleActionScript.new_move_action(0)
+	if is_vs_ai and ai_opponent:
+		# Use AI to decide action
+		var action = ai_opponent.decide_action()
+		if action:
+			print("[BattleController] AI action: %s" % ("Move" if action.type == BattleActionScript.ActionType.MOVE else "Switch"))
+			return action
+
+	# Fallback: Use first available move
+	print("[BattleController] Using fallback AI action (move 0)")
+	var action = BattleActionScript.new(
+		BattleActionScript.ActionType.MOVE,
+		0,  # move_index
+		0,  # target_index
+		-1  # switch_index (not used)
+	)
+	return action
 
 
 # ==================== Public Methods - Battle State Queries ====================
