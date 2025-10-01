@@ -202,6 +202,10 @@ func _add_stat_label(text: String) -> void:
 
 func _on_menu_pressed() -> void:
 	"""Return to main menu."""
+	# Play button sound
+	# TODO: Uncomment when audio files are added
+	# AudioManager.play_sfx("button_press")
+
 	print("[BattleResults] Returning to main menu")
 	return_to_menu_pressed.emit()
 	get_tree().change_scene_to_file("res://scenes/menu/MainMenuScene.tscn")
@@ -209,6 +213,10 @@ func _on_menu_pressed() -> void:
 
 func _on_rematch_pressed() -> void:
 	"""Start a rematch."""
+	# Play button sound
+	# TODO: Uncomment when audio files are added
+	# AudioManager.play_sfx("button_press")
+
 	print("[BattleResults] Starting rematch")
 	rematch_pressed.emit()
 	# Reload the battle scene for a fresh match

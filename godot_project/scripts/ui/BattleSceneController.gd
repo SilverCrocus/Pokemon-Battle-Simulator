@@ -158,6 +158,10 @@ func _on_battle_ready() -> void:
 	"""Handle battle ready event."""
 	battle_log.add_message("Battle started!")
 
+	# Start battle music
+	# TODO: Uncomment when audio files are added
+	# AudioManager.play_music("battle", true, true)
+
 
 func _on_waiting_for_player_action() -> void:
 	"""Handle waiting for player action."""
@@ -170,8 +174,14 @@ func _on_battle_ended(winner: int) -> void:
 
 	if winner == 0:
 		battle_log.add_message("You won the battle!")
+		# Play victory music
+		# TODO: Uncomment when audio files are added
+		# AudioManager.play_music("victory", true, false)
 	else:
 		battle_log.add_message("You lost the battle!")
+		# Play defeat music
+		# TODO: Uncomment when audio files are added
+		# AudioManager.play_music("defeat", true, false)
 
 	# Show results screen after a brief delay
 	await get_tree().create_timer(1.5).timeout
@@ -193,6 +203,16 @@ func _on_move_used(user, move, target) -> void:
 	"""Handle move use event."""
 	var user_name = _get_pokemon_name(user)
 	battle_log.add_message("%s used %s!" % [user_name, move.name])
+
+	# Play move sound effect based on category
+	# TODO: Uncomment when audio files are added
+	# match move.category:
+	#     "Physical":
+	#         AudioManager.play_sfx("move_physical")
+	#     "Special":
+	#         AudioManager.play_sfx("move_special")
+	#     "Status":
+	#         AudioManager.play_sfx("move_status")
 
 
 func _on_damage_dealt(pokemon, amount: int, new_hp: int) -> void:
@@ -232,6 +252,10 @@ func _on_pokemon_fainted(pokemon) -> void:
 	"""Handle Pokemon fainted event."""
 	var pokemon_name = _get_pokemon_name(pokemon)
 	battle_log.add_message("%s fainted!" % pokemon_name)
+
+	# Play faint sound effect
+	# TODO: Uncomment when audio files are added
+	# AudioManager.play_sfx("pokemon_faint")
 
 
 # ==================== Event Handlers - UI ====================

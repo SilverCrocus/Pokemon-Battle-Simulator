@@ -18,8 +18,15 @@ func _ready() -> void:
 	"""Initialize the main menu."""
 	_setup_styling()
 	_connect_signals()
+	_play_menu_music()
 
 	print("[MainMenu] Ready")
+
+
+func _play_menu_music() -> void:
+	"""Start main menu background music."""
+	# TODO: Uncomment when audio files are added
+	# AudioManager.play_music("main_menu", true, true)
 
 
 # ==================== Setup Methods ====================
@@ -150,12 +157,14 @@ func _connect_signals() -> void:
 
 func _on_team_builder_pressed() -> void:
 	"""Navigate to team builder."""
+	_play_button_sound()
 	print("[MainMenu] Opening Team Builder")
 	get_tree().change_scene_to_file("res://scenes/team_builder/TeamBuilderScene.tscn")
 
 
 func _on_quick_battle_pressed() -> void:
 	"""Start a quick battle vs AI."""
+	_play_button_sound()
 	print("[MainMenu] Starting Quick Battle")
 
 	# Check if user has a saved team
@@ -171,22 +180,32 @@ func _on_quick_battle_pressed() -> void:
 
 func _on_multiplayer_pressed() -> void:
 	"""Navigate to multiplayer (not implemented yet)."""
+	_play_button_sound()
 	print("[MainMenu] Multiplayer not yet implemented")
 
 
 func _on_settings_pressed() -> void:
 	"""Open settings menu."""
+	_play_button_sound()
 	print("[MainMenu] Settings menu coming soon")
 	# TODO: Implement settings menu
 
 
 func _on_exit_pressed() -> void:
 	"""Exit the game."""
+	_play_button_sound()
 	print("[MainMenu] Exiting game")
 	get_tree().quit()
 
 
 # ==================== Helper Methods ====================
+
+func _play_button_sound() -> void:
+	"""Play button click sound effect."""
+	# TODO: Uncomment when audio files are added
+	# AudioManager.play_sfx("button_press")
+	pass
+
 
 func _has_saved_team() -> bool:
 	"""Check if user has a saved team."""

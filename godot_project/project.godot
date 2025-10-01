@@ -23,6 +23,7 @@ TypeChart="*res://autoloads/TypeChart.gd"
 BattleController="*res://autoloads/BattleController.gd"
 BattleEvents="*res://autoloads/BattleEvents.gd"
 BattleTheme="*res://scripts/ui/theme/BattleTheme.gd"
+AudioManager="*res://autoloads/AudioManager.gd"
 
 [display]
 
