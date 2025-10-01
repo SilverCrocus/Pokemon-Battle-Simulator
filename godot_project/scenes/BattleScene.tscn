@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://bvxj5k7qm2w3r"]
+[gd_scene load_steps=8 format=3 uid="uid://bvxj5k7qm2w3r"]
 
 [ext_resource type="Script" path="res://scripts/ui/BattleSceneController.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://ct5m8n4p1w9kj" path="res://scenes/components/PokemonInfoPanel.tscn" id="2_opponent_info"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://d7m3n6p4q2kxw" path="res://scenes/components/BattleLog.tscn" id="4_battle_log"]
 [ext_resource type="PackedScene" uid="uid://c5k8m3n7p4qvw" path="res://scenes/components/ActionMenu.tscn" id="5_action_menu"]
 [ext_resource type="PackedScene" uid="uid://b6k5m8n2p9wvx" path="res://scenes/components/MoveSelectionUI.tscn" id="6_move_selection"]
+[ext_resource type="PackedScene" uid="uid://c8m4n7p2q5rxs" path="res://scenes/components/BattleResultsScreen.tscn" id="7_results_screen"]
 
 [node name="BattleScene" type="Control"]
 layout_mode = 3
@@ -110,3 +111,7 @@ offset_right = 240.0
 offset_bottom = 90.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="BattleResultsScreen" parent="UILayer" instance=ExtResource("7_results_screen")]
+visible = false
+layout_mode = 1

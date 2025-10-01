@@ -27,6 +27,7 @@ const AnimationManagerScript = preload("res://scripts/ui/AnimationManager.gd")
 @onready var battle_log = $UILayer/BattleUIContainer/BattleLog
 @onready var action_menu = $UILayer/BattleUIContainer/ActionMenu
 @onready var move_selection_ui = $UILayer/BattleUIContainer/MoveSelectionUI
+@onready var results_screen = $UILayer/BattleResultsScreen
 
 # ==================== State ====================
 
@@ -141,6 +142,16 @@ func _hide_all_menus() -> void:
 	current_ui_state = "idle"
 
 
+func _show_results_screen(winner: int) -> void:
+	"""Show the battle results screen."""
+	var stats = {
+		"turns": 0,  # TODO: Track turn count in BattleController
+		"damage_dealt": 0,  # TODO: Track damage stats
+		"damage_taken": 0
+	}
+	results_screen.show_results(winner, stats)
+
+
 # ==================== Event Handlers - BattleController ====================
 
 func _on_battle_ready() -> void:
@@ -157,10 +168,14 @@ func _on_battle_ended(winner: int) -> void:
 	"""Handle battle end."""
 	_hide_all_menus()
 
-	if winner == 1:
+	if winner == 0:
 		battle_log.add_message("You won the battle!")
 	else:
 		battle_log.add_message("You lost the battle!")
+
+	# Show results screen after a brief delay
+	await get_tree().create_timer(1.5).timeout
+	_show_results_screen(winner)
 
 
 # ==================== Event Handlers - BattleEvents ====================
