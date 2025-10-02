@@ -188,9 +188,12 @@ func _init(
 
 	# Validate and set ability
 	if p_ability.is_empty():
-		# Default to first ability
-		assert(species.abilities.size() > 0, "BattlePokemon: species has no abilities")
-		ability = species.abilities[0]
+		# Default to first ability (or empty if none exist)
+		if species.abilities.size() > 0:
+			ability = species.abilities[0]
+		else:
+			# Pokemon has no abilities in data - use empty string
+			ability = ""
 	else:
 		var all_abilities = species.get_all_abilities()
 		assert(p_ability in all_abilities, "BattlePokemon: ability '%s' not valid for %s" % [p_ability, species.name])
@@ -515,3 +518,78 @@ func restore_all_pp() -> void:
 	"""Restore all moves to full PP."""
 	for i in range(moves.size()):
 		move_pp[i] = moves[i].pp
+
+
+func to_dict() -> Dictionary:
+	"""
+	Serialize Pokemon to a dictionary for network transmission.
+
+	Returns:
+		Dictionary containing all Pokemon data needed to reconstruct state
+	"""
+	# Serialize moves as array of move IDs
+	var move_ids: Array[int] = []
+	for move in moves:
+		move_ids.append(move.move_id)
+
+	return {
+		"species_id": species.pokemon_id,
+		"level": level,
+		"ivs": ivs.duplicate(),
+		"evs": evs.duplicate(),
+		"nature": nature,
+		"current_hp": current_hp,
+		"max_hp": max_hp,
+		"stats": stats.duplicate(),
+		"stat_stages": stat_stages.duplicate(),
+		"status": status,
+		"status_counter": status_counter,
+		"move_ids": move_ids,
+		"move_pp": move_pp.duplicate(),
+		"ability": ability,
+		"item": item,
+		"nickname": nickname
+	}
+
+
+static func from_dict(data: Dictionary) -> BattlePokemon:
+	"""
+	Reconstruct a BattlePokemon from a dictionary.
+
+	Args:
+		data: Dictionary containing Pokemon data (from to_dict())
+
+	Returns:
+		New BattlePokemon instance reconstructed from data
+	"""
+	# Load species data
+	var species_data: PokemonData = DataManager.get_pokemon(data["species_id"])
+
+	# Load move data
+	var move_data_array: Array[MoveData] = []
+	for move_id in data["move_ids"]:
+		move_data_array.append(DataManager.get_move(move_id))
+
+	# Create new Pokemon instance
+	var pokemon = BattlePokemon.new(
+		species_data,
+		data["level"],
+		data["ivs"],
+		data["evs"],
+		data["nature"],
+		move_data_array,
+		data["ability"],
+		data.get("item", ""),
+		data.get("nickname", "")
+	)
+
+	# Restore runtime state
+	pokemon.current_hp = data["current_hp"]
+	pokemon.max_hp = data["max_hp"]
+	pokemon.stats = data["stats"].duplicate()
+	pokemon.stat_stages = data["stat_stages"].duplicate()
+	pokemon.status = data["status"]
+	pokemon.status_counter = data["status_counter"]
+	pokemon.move_pp = data["move_pp"].duplicate()
+
+	return pokemon

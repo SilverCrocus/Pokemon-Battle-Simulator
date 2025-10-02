@@ -458,11 +458,20 @@ func _count_alive(team) -> int:  # Array of BattlePokemon parameter
 
 func to_dict() -> Dictionary:
 	"""
-	Serialize battle state to a dictionary.
+	Serialize battle state to a dictionary for network transmission.
 
 	Returns:
-		Dictionary containing all battle state data
+		Dictionary containing complete battle state including teams
 	"""
+	# Serialize teams
+	var team1_data = []
+	for pokemon in team1:
+		team1_data.append(pokemon.to_dict())
+
+	var team2_data = []
+	for pokemon in team2:
+		team2_data.append(pokemon.to_dict())
+
 	return {
 		"turn_number": turn_number,
 		"weather": weather,
@@ -472,8 +481,45 @@ func to_dict() -> Dictionary:
 		"active1_index": active1_index,
 		"active2_index": active2_index,
 		"rng_seed": rng_seed,
-		"battle_status": battle_status
+		"battle_status": battle_status,
+		"team1": team1_data,
+		"team2": team2_data
 	}
+
+
+static func from_dict(data: Dictionary) -> BattleState:
+	"""
+	Reconstruct a BattleState from a dictionary.
+
+	Args:
+		data: Dictionary containing battle state data (from to_dict())
+
+	Returns:
+		New BattleState instance reconstructed from data
+	"""
+	# Create new state with same RNG seed
+	var state = BattleState.new(data["rng_seed"])
+
+	# Restore basic state
+	state.turn_number = data["turn_number"]
+	state.weather = data["weather"]
+	state.weather_turns_remaining = data["weather_turns_remaining"]
+	state.terrain = data["terrain"]
+	state.terrain_turns_remaining = data["terrain_turns_remaining"]
+	state.active1_index = data["active1_index"]
+	state.active2_index = data["active2_index"]
+	state.battle_status = data["battle_status"]
+
+	# Restore teams
+	state.team1.clear()
+	for pokemon_data in data["team1"]:
+		state.team1.append(BattlePokemonScript.from_dict(pokemon_data))
+
+	state.team2.clear()
+	for pokemon_data in data["team2"]:
+		state.team2.append(BattlePokemonScript.from_dict(pokemon_data))
+
+	return state
 
 
 func clone() -> BattleState:
