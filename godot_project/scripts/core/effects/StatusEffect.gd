@@ -1,4 +1,3 @@
-class_name StatusEffect
 extends "res://scripts/core/MoveEffect.gd"
 
 ## Status condition inflicting effect

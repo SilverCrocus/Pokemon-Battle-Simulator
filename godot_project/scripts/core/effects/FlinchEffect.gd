@@ -1,4 +1,3 @@
-class_name FlinchEffect
 extends "res://scripts/core/MoveEffect.gd"
 
 ## Flinch effect

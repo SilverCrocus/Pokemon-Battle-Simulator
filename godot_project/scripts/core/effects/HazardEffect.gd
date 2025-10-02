@@ -1,4 +1,3 @@
-class_name HazardEffect
 extends "res://scripts/core/MoveEffect.gd"
 
 ## Entry hazard effect

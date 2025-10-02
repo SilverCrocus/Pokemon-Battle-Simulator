@@ -11,19 +11,19 @@ extends Node
 ##       if effect.should_execute(rng):
 ##           var result = effect.execute(context)
 
-# Preload all effect classes
-const StatusEffect = preload("res://scripts/core/effects/StatusEffect.gd")
-const StatChangeEffect = preload("res://scripts/core/effects/StatChangeEffect.gd")
-const MultiStatChangeEffect = preload("res://scripts/core/effects/MultiStatChangeEffect.gd")
-const RecoilEffect = preload("res://scripts/core/effects/RecoilEffect.gd")
-const DrainEffect = preload("res://scripts/core/effects/DrainEffect.gd")
-const FlinchEffect = preload("res://scripts/core/effects/FlinchEffect.gd")
-const OHKOEffect = preload("res://scripts/core/effects/OHKOEffect.gd")
-const MultiHitEffect = preload("res://scripts/core/effects/MultiHitEffect.gd")
-const WeatherEffect = preload("res://scripts/core/effects/WeatherEffect.gd")
-const TerrainEffect = preload("res://scripts/core/effects/TerrainEffect.gd")
-const HazardEffect = preload("res://scripts/core/effects/HazardEffect.gd")
-const HealEffect = preload("res://scripts/core/effects/HealEffect.gd")
+# Preload all effect classes (stored as vars since no class_name)
+var StatusEffect = load("res://scripts/core/effects/StatusEffect.gd")
+var StatChangeEffect = load("res://scripts/core/effects/StatChangeEffect.gd")
+var MultiStatChangeEffect = load("res://scripts/core/effects/MultiStatChangeEffect.gd")
+var RecoilEffect = load("res://scripts/core/effects/RecoilEffect.gd")
+var DrainEffect = load("res://scripts/core/effects/DrainEffect.gd")
+var FlinchEffect = load("res://scripts/core/effects/FlinchEffect.gd")
+var OHKOEffect = load("res://scripts/core/effects/OHKOEffect.gd")
+var MultiHitEffect = load("res://scripts/core/effects/MultiHitEffect.gd")
+var WeatherEffect = load("res://scripts/core/effects/WeatherEffect.gd")
+var TerrainEffect = load("res://scripts/core/effects/TerrainEffect.gd")
+var HazardEffect = load("res://scripts/core/effects/HazardEffect.gd")
+var HealEffect = load("res://scripts/core/effects/HealEffect.gd")
 
 ## Registry of move ID to effects
 var move_effects: Dictionary = {}

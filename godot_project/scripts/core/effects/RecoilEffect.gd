@@ -1,4 +1,3 @@
-class_name RecoilEffect
 extends "res://scripts/core/MoveEffect.gd"
 
 ## Recoil damage effect

@@ -1,4 +1,3 @@
-class_name HealEffect
 extends "res://scripts/core/MoveEffect.gd"
 
 ## Healing effect

@@ -1,4 +1,3 @@
-class_name MultiStatChangeEffect
 extends "res://scripts/core/MoveEffect.gd"
 
 ## Multiple stat stage change effect

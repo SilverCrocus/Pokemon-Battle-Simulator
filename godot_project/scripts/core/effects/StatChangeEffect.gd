@@ -1,4 +1,3 @@
-class_name StatChangeEffect
 extends "res://scripts/core/MoveEffect.gd"
 
 ## Single stat stage change effect

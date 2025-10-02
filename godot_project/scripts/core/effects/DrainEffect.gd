@@ -1,4 +1,3 @@
-class_name DrainEffect
 extends "res://scripts/core/MoveEffect.gd"
 
 ## HP drain effect
