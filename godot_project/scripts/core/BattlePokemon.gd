@@ -196,8 +196,18 @@ func _init(
 			ability = ""
 	else:
 		var all_abilities = species.get_all_abilities()
-		assert(p_ability in all_abilities, "BattlePokemon: ability '%s' not valid for %s" % [p_ability, species.name])
-		ability = p_ability
+
+		# Case-insensitive ability validation and normalization
+		var ability_lower = p_ability.to_lower()
+		var found = false
+		for valid_ability in all_abilities:
+			if valid_ability.to_lower() == ability_lower:
+				ability = valid_ability  # Use the canonical form from resource
+				found = true
+				break
+
+		assert(found, "BattlePokemon: ability '%s' not valid for %s. Valid abilities: %s" % [p_ability, species.name, all_abilities])
+
 
 	# Set optional properties
 	item = p_item

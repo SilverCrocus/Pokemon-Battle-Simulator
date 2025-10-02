@@ -462,7 +462,7 @@ func _on_save_team_pressed() -> void:
 			"nickname": pokemon.nickname,
 			"level": pokemon.level,
 			"nature": pokemon.nature,
-			"ability": pokemon.ability,
+			"ability": pokemon.ability.to_lower() if pokemon.ability else "",  # Normalize to lowercase
 			"item": pokemon.item,
 			"moves": pokemon.moves.map(func(m): return m.id),
 			"evs": pokemon.evs,
