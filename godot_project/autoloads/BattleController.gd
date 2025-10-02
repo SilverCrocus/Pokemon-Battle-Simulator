@@ -24,7 +24,14 @@ signal waiting_for_player_action()
 
 # ==================== State ====================
 
-var engine: RefCounted = null  # BattleEngine instance
+## Battle modes
+enum BattleMode {
+	LOCAL,     ## Local battle (vs AI or hot-seat)
+	NETWORK    ## Network multiplayer battle
+}
+
+var current_mode: BattleMode = BattleMode.LOCAL
+var engine: RefCounted = null  # BattleEngine instance (local mode only)
 var is_battle_active: bool = false
 var is_waiting_for_action: bool = false
 
@@ -43,11 +50,21 @@ var is_vs_ai: bool = false
 var ai_opponent: RefCounted = null  # BattleAI instance
 var ai_difficulty: int = 0  # BattleAI.Difficulty enum value
 
+# Network mode
+var network_battle_state: Dictionary = {}  # Server-authoritative state
+var player_number: int = 0  # 1 or 2 in network mode
+
 # ==================== Lifecycle ====================
 
 func _ready() -> void:
 	"""Initialize on game start."""
 	print("[BattleController] Ready")
+
+	# Connect to BattleClient signals for network mode
+	if not OS.has_feature("dedicated_server"):
+		BattleClient.battle_started.connect(_on_network_battle_started)
+		BattleClient.battle_state_updated.connect(_on_network_battle_state_updated)
+		BattleClient.battle_ended.connect(_on_network_battle_ended)
 
 
 # ==================== Public Methods - Battle Management ====================
@@ -98,6 +115,27 @@ func start_battle(team1: Array, team2: Array, seed: int = -1, use_ai: bool = fal
 	request_player_action()
 
 
+func start_network_battle(p_player_number: int) -> void:
+	"""
+	Start a network multiplayer battle.
+	Called when BattleClient receives battle_started signal.
+
+	@param p_player_number: This player's number (1 or 2)
+	"""
+	if is_battle_active:
+		push_error("[BattleController] Cannot start battle - battle already active")
+		return
+
+	current_mode = BattleMode.NETWORK
+	player_number = p_player_number
+	is_battle_active = true
+
+	print("[BattleController] Network battle started - You are Player %d" % player_number)
+
+	# Battle ready signal will be emitted when we receive initial state
+	battle_ready.emit()
+
+
 func end_battle() -> void:
 	"""End the current battle."""
 	if not is_battle_active:
@@ -109,15 +147,24 @@ func end_battle() -> void:
 	opponent_action = null
 
 	# Emit battle ended signal
-	var winner = (engine as RefCounted).call("get_winner")
+	var winner = 0
+	if current_mode == BattleMode.LOCAL:
+		winner = (engine as RefCounted).call("get_winner")
+	# For network mode, winner is set by _on_network_battle_ended
+
 	battle_ended.emit(winner)
 
 	print("[BattleController] Battle ended - Winner: Team %d" % winner)
 
-	# Clear engine and AI
+	# Clear engine and AI (local mode)
 	engine = null
 	ai_opponent = null
 	is_vs_ai = false
+
+	# Clear network state
+	network_battle_state = {}
+	player_number = 0
+	current_mode = BattleMode.LOCAL
 
 
 func request_player_action() -> void:
@@ -144,10 +191,14 @@ func submit_player_action(action: BattleActionScript) -> void:
 
 	print("[BattleController] Player action submitted: %s" % action.action_type)
 
-	# Get opponent action (AI decision)
-	opponent_action = _get_opponent_action()
+	# Network mode: send to server
+	if current_mode == BattleMode.NETWORK:
+		BattleClient.submit_battle_action(action)
+		print("[BattleController] Action sent to server")
+		return
 
-	# Execute turn
+	# Local mode: get opponent action and execute
+	opponent_action = _get_opponent_action()
 	_execute_turn()
 
 
@@ -248,3 +299,58 @@ func get_winner() -> int:
 		return 0
 
 	return (engine as RefCounted).call("get_winner")
+
+
+# ==================== Network Mode Signal Handlers ====================
+
+func _on_network_battle_started(battle_state_data: Dictionary) -> void:
+	"""Handle battle start from network."""
+	print("[BattleController] Network battle state received")
+
+	# Store server-authoritative state
+	network_battle_state = battle_state_data
+
+	# Start network battle
+	start_network_battle(BattleClient.get_player_number())
+
+	# Wait for first action
+	request_player_action()
+
+
+func _on_network_battle_state_updated(battle_state_data: Dictionary) -> void:
+	"""Handle battle state update from server."""
+	print("[BattleController] Battle state updated from server")
+
+	# Store updated state
+	network_battle_state = battle_state_data
+
+	# Emit turn resolved (UI will update based on new state)
+	turn_resolved.emit()
+
+	# Check if battle is over
+	var state_status = battle_state_data.get("battle_status", 1)  # 1 = IN_PROGRESS
+	if state_status != 1:  # Not IN_PROGRESS
+		var winner_num = 0
+		if state_status == 2:  # PLAYER1_WIN
+			winner_num = 1
+		elif state_status == 3:  # PLAYER2_WIN
+			winner_num = 2
+		_on_network_battle_ended(winner_num)
+	else:
+		# Request next action after a brief delay
+		await get_tree().create_timer(0.5).timeout
+		request_player_action()
+
+
+func _on_network_battle_ended(winner: int) -> void:
+	"""Handle battle end from network."""
+	print("[BattleController] Network battle ended - Winner: Player %d" % winner)
+
+	# Emit battle ended
+	battle_ended.emit(winner)
+
+	# Clean up
+	is_battle_active = false
+	network_battle_state = {}
+	player_number = 0
+	current_mode = BattleMode.LOCAL
