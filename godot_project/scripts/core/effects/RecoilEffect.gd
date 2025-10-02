@@ -1,5 +1,5 @@
 class_name RecoilEffect
-extends MoveEffect
+extends "res://scripts/core/MoveEffect.gd"
 
 ## Recoil damage effect
 ##

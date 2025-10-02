@@ -1,5 +1,5 @@
 class_name HealEffect
-extends MoveEffect
+extends "res://scripts/core/MoveEffect.gd"
 
 ## Healing effect
 ##

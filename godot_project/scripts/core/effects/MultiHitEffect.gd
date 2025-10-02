@@ -1,5 +1,5 @@
 class_name MultiHitEffect
-extends MoveEffect
+extends "res://scripts/core/MoveEffect.gd"
 
 ## Multi-hit effect
 ##

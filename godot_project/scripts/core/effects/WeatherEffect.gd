@@ -1,5 +1,5 @@
 class_name WeatherEffect
-extends MoveEffect
+extends "res://scripts/core/MoveEffect.gd"
 
 ## Weather setting effect
 ##

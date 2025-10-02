@@ -1,5 +1,5 @@
 class_name TerrainEffect
-extends MoveEffect
+extends "res://scripts/core/MoveEffect.gd"
 
 ## Terrain setting effect
 ##
