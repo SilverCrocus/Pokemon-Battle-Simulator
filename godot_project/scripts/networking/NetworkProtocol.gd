@@ -147,7 +147,118 @@ static func validate_packet(packet: Variant) -> bool:
 	if packet["version"] != PROTOCOL_VERSION:
 		return false
 
+	# Validate type is within enum range
+	var type_val = packet["type"]
+	if not type_val is int or type_val < 0 or type_val >= MessageType.size():
+		return false
+
+	# Validate timestamp is reasonable (not in future, not too old)
+	var current_time = Time.get_unix_time_from_system()
+	var packet_time = packet["timestamp"]
+	if not packet_time is float and not packet_time is int:
+		return false
+	if packet_time > current_time + 5.0:  # Allow 5s clock skew
+		return false
+	if packet_time < current_time - 300.0:  # Reject packets older than 5 minutes
+		return false
+
+	# Validate data field exists and is a dictionary
+	if not packet.has("data") or not packet["data"] is Dictionary:
+		return false
+
 	return true
+
+## Validate team data structure
+static func validate_team_data(team_data: Variant) -> bool:
+	if not team_data is Dictionary:
+		return false
+
+	if not team_data.has("pokemon") or not team_data["pokemon"] is Array:
+		return false
+
+	var pokemon_array = team_data["pokemon"]
+	if pokemon_array.size() < 1 or pokemon_array.size() > 6:
+		return false
+
+	# Validate each Pokemon entry
+	for pokemon in pokemon_array:
+		if not pokemon is Dictionary:
+			return false
+		if not pokemon.has("species_id") or not pokemon["species_id"] is int:
+			return false
+		if not pokemon.has("level") or not pokemon["level"] is int:
+			return false
+		if pokemon["level"] < 1 or pokemon["level"] > 100:
+			return false
+		if not pokemon.has("moves") or not pokemon["moves"] is Array:
+			return false
+		if pokemon["moves"].size() < 1 or pokemon["moves"].size() > 4:
+			return false
+
+	return true
+
+## Validate battle action data
+static func validate_action_data(action_data: Variant) -> bool:
+	if not action_data is Dictionary:
+		return false
+
+	if not action_data.has("action_type") or not action_data["action_type"] is int:
+		return false
+
+	var action_type = action_data["action_type"]
+	if action_type < 0 or action_type > 2:  # 0=MOVE, 1=SWITCH, 2=FORFEIT
+		return false
+
+	# Validate move action
+	if action_type == 0:  # MOVE
+		if not action_data.has("move_index") or not action_data["move_index"] is int:
+			return false
+		if action_data["move_index"] < 0 or action_data["move_index"] > 3:
+			return false
+
+	# Validate switch action
+	if action_type == 1:  # SWITCH
+		if not action_data.has("switch_index") or not action_data["switch_index"] is int:
+			return false
+		if action_data["switch_index"] < 0 or action_data["switch_index"] > 5:
+			return false
+
+	return true
+
+## Validate lobby name
+static func validate_lobby_name(lobby_name: String) -> bool:
+	if lobby_name.is_empty():
+		return true  # Empty name is allowed (server generates default)
+
+	# Check length
+	if lobby_name.length() > 50:
+		return false
+
+	# Check for invalid characters (allow alphanumeric, spaces, hyphens, underscores)
+	var regex = RegEx.new()
+	regex.compile("^[a-zA-Z0-9 _-]+$")
+	if not regex.search(lobby_name):
+		return false
+
+	return true
+
+## Sanitize string input to prevent injection attacks
+static func sanitize_string(input: String, max_length: int = 100) -> String:
+	# Truncate to max length
+	var sanitized = input.substr(0, max_length)
+
+	# Remove control characters and non-printable characters
+	var result = ""
+	for i in range(sanitized.length()):
+		var c = sanitized[i]
+		var code = c.unicode_at(0)
+		# Allow printable ASCII and common extended characters
+		if code >= 32 and code < 127:
+			result += c
+		elif code >= 160 and code < 65536:  # Extended Unicode
+			result += c
+
+	return result
 
 ## Create an error packet
 static func create_error_packet(code: ErrorCode, message: String = "") -> Dictionary:

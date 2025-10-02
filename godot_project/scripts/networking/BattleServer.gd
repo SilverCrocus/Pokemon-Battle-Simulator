@@ -137,15 +137,33 @@ func request_create_lobby(team_data: Dictionary, lobby_name: String = "") -> voi
 	"""
 	var peer_id = multiplayer.get_remote_sender_id()
 
+	# Validate lobby name
+	if not NetworkProtocol.validate_lobby_name(lobby_name):
+		_send_error(peer_id, NetworkProtocol.ErrorCode.INVALID_ACTION, "Invalid lobby name")
+		return
+
+	# Sanitize lobby name
+	lobby_name = NetworkProtocol.sanitize_string(lobby_name, 50)
+
 	# Check if player already in a lobby
 	if _peer_to_lobby.has(peer_id):
 		_send_error(peer_id, NetworkProtocol.ErrorCode.ALREADY_IN_LOBBY)
 		return
 
-	# Validate team
+	# Check if server is full
+	if _lobbies.size() >= NetworkProtocol.MAX_LOBBIES:
+		_send_error(peer_id, NetworkProtocol.ErrorCode.SERVER_FULL)
+		return
+
+	# Validate team structure
+	if not NetworkProtocol.validate_team_data(team_data):
+		_send_error(peer_id, NetworkProtocol.ErrorCode.INVALID_TEAM, "Team data validation failed")
+		return
+
+	# Validate and create team
 	var team = _validate_and_create_team(team_data)
 	if team.is_empty():
-		_send_error(peer_id, NetworkProtocol.ErrorCode.INVALID_TEAM)
+		_send_error(peer_id, NetworkProtocol.ErrorCode.INVALID_TEAM, "Failed to create team")
 		return
 
 	# Create lobby
@@ -172,6 +190,11 @@ func request_join_lobby(lobby_id: int, team_data: Dictionary) -> void:
 	"""
 	var peer_id = multiplayer.get_remote_sender_id()
 
+	# Validate lobby ID
+	if lobby_id < 1:
+		_send_error(peer_id, NetworkProtocol.ErrorCode.LOBBY_NOT_FOUND, "Invalid lobby ID")
+		return
+
 	# Check if player already in a lobby
 	if _peer_to_lobby.has(peer_id):
 		_send_error(peer_id, NetworkProtocol.ErrorCode.ALREADY_IN_LOBBY)
@@ -189,10 +212,20 @@ func request_join_lobby(lobby_id: int, team_data: Dictionary) -> void:
 		_send_error(peer_id, NetworkProtocol.ErrorCode.LOBBY_FULL)
 		return
 
-	# Validate team
+	# Check lobby state
+	if lobby.state != NetworkProtocol.LobbyState.WAITING:
+		_send_error(peer_id, NetworkProtocol.ErrorCode.INVALID_ACTION, "Lobby not accepting players")
+		return
+
+	# Validate team structure
+	if not NetworkProtocol.validate_team_data(team_data):
+		_send_error(peer_id, NetworkProtocol.ErrorCode.INVALID_TEAM, "Team data validation failed")
+		return
+
+	# Validate and create team
 	var team = _validate_and_create_team(team_data)
 	if team.is_empty():
-		_send_error(peer_id, NetworkProtocol.ErrorCode.INVALID_TEAM)
+		_send_error(peer_id, NetworkProtocol.ErrorCode.INVALID_TEAM, "Failed to create team")
 		return
 
 	# Add player to lobby
@@ -230,13 +263,25 @@ func set_player_ready(lobby_id: int, ready: bool) -> void:
 	"""
 	var peer_id = multiplayer.get_remote_sender_id()
 
+	# Validate lobby ID
+	if lobby_id < 1:
+		_send_error(peer_id, NetworkProtocol.ErrorCode.LOBBY_NOT_FOUND, "Invalid lobby ID")
+		return
+
 	if not _lobbies.has(lobby_id):
 		_send_error(peer_id, NetworkProtocol.ErrorCode.LOBBY_NOT_FOUND)
 		return
 
 	var lobby: Lobby = _lobbies[lobby_id]
 
+	# Verify player is in this lobby
 	if not lobby.has_player(peer_id):
+		_send_error(peer_id, NetworkProtocol.ErrorCode.INVALID_ACTION, "Not in this lobby")
+		return
+
+	# Check lobby state
+	if lobby.state != NetworkProtocol.LobbyState.READY:
+		_send_error(peer_id, NetworkProtocol.ErrorCode.INVALID_ACTION, "Lobby not ready for battle")
 		return
 
 	# Update ready state
@@ -273,6 +318,11 @@ func submit_action(action_data: Dictionary) -> void:
 	"""
 	var peer_id = multiplayer.get_remote_sender_id()
 
+	# Validate action data structure
+	if not NetworkProtocol.validate_action_data(action_data):
+		_send_error(peer_id, NetworkProtocol.ErrorCode.INVALID_ACTION, "Invalid action data structure")
+		return
+
 	if not _peer_to_lobby.has(peer_id):
 		_send_error(peer_id, NetworkProtocol.ErrorCode.LOBBY_NOT_FOUND)
 		return
@@ -280,22 +330,39 @@ func submit_action(action_data: Dictionary) -> void:
 	var lobby_id = _peer_to_lobby[peer_id]
 	var lobby: Lobby = _lobbies[lobby_id]
 
+	# Verify lobby state
 	if lobby.state != NetworkProtocol.LobbyState.IN_BATTLE:
+		_send_error(peer_id, NetworkProtocol.ErrorCode.INVALID_ACTION, "Not in battle")
 		return
 
 	if not lobby.battle_engine:
+		_send_error(peer_id, NetworkProtocol.ErrorCode.INVALID_ACTION, "Battle engine not initialized")
 		return
 
 	# Create action from data
 	var action = BattleActionScript.from_dict(action_data)
+	if not action:
+		_send_error(peer_id, NetworkProtocol.ErrorCode.INVALID_ACTION, "Failed to parse action")
+		return
+
 	var player_num = lobby.get_player_number(peer_id)
 
-	# Validate action
+	# Validate action against game state
 	if not _validate_action(lobby, player_num, action):
-		_send_error(peer_id, NetworkProtocol.ErrorCode.INVALID_ACTION)
+		_send_error(peer_id, NetworkProtocol.ErrorCode.INVALID_ACTION, "Action validation failed")
+		return
+
+	# Check if player already submitted this turn
+	if player_num == 1 and lobby.battle_engine._pending_player1_action:
+		_send_error(peer_id, NetworkProtocol.ErrorCode.INVALID_ACTION, "Action already submitted")
+		return
+	if player_num == 2 and lobby.battle_engine._pending_player2_action:
+		_send_error(peer_id, NetworkProtocol.ErrorCode.INVALID_ACTION, "Action already submitted")
 		return
 
 	# Store action and check if we have both
+	lobby.update_activity()
+
 	if player_num == 1:
 		lobby.battle_engine._pending_player1_action = action
 	else:
