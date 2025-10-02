@@ -1,4 +1,4 @@
-extends "res://scripts/core/MoveEffect.gd"
+extends MoveEffect
 
 ## Single stat stage change effect
 ##

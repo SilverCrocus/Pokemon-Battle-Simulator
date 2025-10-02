@@ -1,4 +1,4 @@
-extends "res://scripts/core/MoveEffect.gd"
+extends MoveEffect
 
 ## Status condition inflicting effect
 ##
