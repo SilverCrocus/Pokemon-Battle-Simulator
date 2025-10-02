@@ -105,6 +105,10 @@ func get_effectiveness(atk_type: String, def_type: String) -> float:
 	Get type effectiveness multiplier for attacking type vs defending type.
 	Returns 0, 0.5, 1, or 2.
 	"""
+	# Empty string means no type (single-type Pokemon)
+	if def_type == "":
+		return NORMAL
+
 	if atk_type not in type_chart:
 		push_warning("Unknown attacking type: %s" % atk_type)
 		return NORMAL

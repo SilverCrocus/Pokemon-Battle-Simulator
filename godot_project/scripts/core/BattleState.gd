@@ -152,7 +152,7 @@ func begin_battle() -> void:
 	assert(team2.size() > 0, "BattleState: team2 not set")
 	assert(battle_status == BattleStatus.NOT_STARTED, "BattleState: battle already started")
 
-	turn_number = 1
+	turn_number = 0  # Turn 0 = pre-battle state, increments to 1 on first turn
 	active1_index = 0
 	active2_index = 0
 	battle_status = BattleStatus.IN_PROGRESS
