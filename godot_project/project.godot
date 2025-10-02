@@ -13,7 +13,7 @@ config_version=5
 config/name="Pokemon Battle Simulator"
 config/description="Competitive Pokemon battle simulator with online multiplayer"
 config/version="0.2.0"
-run/main_scene="res://scenes/menu/MainMenuScene.tscn"
+run/main_scene="res://Main.tscn"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 
 [autoload]
