@@ -1,0 +1,208 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/LobbyController.gd" id="1_lobby"]
+
+[node name="LobbyScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lobby")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.15, 0.2, 1)
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -100.0
+offset_top = 20.0
+offset_right = 100.0
+offset_bottom = 60.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 32
+text = "Multiplayer Lobby"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 70.0
+offset_right = 200.0
+offset_bottom = 90.0
+grow_horizontal = 2
+text = "Status: Ready"
+horizontal_alignment = 1
+
+[node name="LobbyBrowserPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -250.0
+offset_right = 400.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="LobbyBrowserPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LobbyBrowserPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CreateSection" type="VBoxContainer" parent="LobbyBrowserPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CreateLabel" type="Label" parent="LobbyBrowserPanel/MarginContainer/VBoxContainer/CreateSection"]
+layout_mode = 2
+text = "Create Lobby"
+theme_override_font_sizes/font_size = 20
+
+[node name="LobbyNameInput" type="LineEdit" parent="LobbyBrowserPanel/MarginContainer/VBoxContainer/CreateSection"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Lobby Name (optional)"
+
+[node name="CreateLobbyButton" type="Button" parent="LobbyBrowserPanel/MarginContainer/VBoxContainer/CreateSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Create Lobby"
+
+[node name="HSeparator1" type="HSeparator" parent="LobbyBrowserPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="JoinSection" type="VBoxContainer" parent="LobbyBrowserPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="JoinLabel" type="Label" parent="LobbyBrowserPanel/MarginContainer/VBoxContainer/JoinSection"]
+layout_mode = 2
+text = "Join by Code"
+theme_override_font_sizes/font_size = 20
+
+[node name="HBoxContainer" type="HBoxContainer" parent="LobbyBrowserPanel/MarginContainer/VBoxContainer/JoinSection"]
+layout_mode = 2
+
+[node name="JoinCodeInput" type="LineEdit" parent="LobbyBrowserPanel/MarginContainer/VBoxContainer/JoinSection/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Enter Lobby Code"
+
+[node name="JoinCodeButton" type="Button" parent="LobbyBrowserPanel/MarginContainer/VBoxContainer/JoinSection/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Join"
+
+[node name="HSeparator2" type="HSeparator" parent="LobbyBrowserPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="BrowserSection" type="VBoxContainer" parent="LobbyBrowserPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BrowserLabel" type="Label" parent="LobbyBrowserPanel/MarginContainer/VBoxContainer/BrowserSection"]
+layout_mode = 2
+text = "Available Lobbies"
+theme_override_font_sizes/font_size = 20
+
+[node name="ScrollContainer" type="ScrollContainer" parent="LobbyBrowserPanel/MarginContainer/VBoxContainer/BrowserSection"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LobbyListContainer" type="VBoxContainer" parent="LobbyBrowserPanel/MarginContainer/VBoxContainer/BrowserSection/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LobbyRoomPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -250.0
+offset_right = 400.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="LobbyRoomPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LobbyRoomPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="RoomLabel" type="Label" parent="LobbyRoomPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Lobby Room"
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+
+[node name="TeamPreviewLabel" type="Label" parent="LobbyRoomPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Your Team: 1 Pokemon"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="LobbyRoomPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="PlayersLabel" type="Label" parent="LobbyRoomPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Players"
+theme_override_font_sizes/font_size = 20
+
+[node name="PlayerListContainer" type="VBoxContainer" parent="LobbyRoomPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HSeparator2" type="HSeparator" parent="LobbyRoomPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="LobbyRoomPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="ReadyButton" type="Button" parent="LobbyRoomPanel/MarginContainer/VBoxContainer/ButtonsContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Ready"
+
+[node name="LeaveButton" type="Button" parent="LobbyRoomPanel/MarginContainer/VBoxContainer/ButtonsContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Leave Lobby"
