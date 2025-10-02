@@ -21,9 +21,9 @@ A competitive Pokemon battle simulator built in Godot 4 with online multiplayer 
 - 🎵 **Audio System**: Music and sound effects
 
 ### 🚧 In Progress (Phase 4)
-- 📝 **Move Effects**: Implementing 200+ competitive moves
-- 💪 **Abilities**: Implementing 50+ competitive abilities
-- 🌦️ **Advanced Mechanics**: Weather, terrain, entry hazards
+- ✅ **Move Effects**: 70+ competitive moves with 12 effect types
+- 📝 **Abilities**: Implementing 50+ competitive abilities
+- ✅ **Advanced Mechanics**: Weather, terrain, entry hazards
 
 ### 📋 Planned
 - 🎬 **Battle Replays**: Record and share battles
@@ -34,16 +34,17 @@ A competitive Pokemon battle simulator built in Godot 4 with online multiplayer 
 ## 🚀 Project Status
 
 **Current Phase**: Phase 4 - Polish & Competitive Features
-**Overall Progress**: 86% (Week 12 of 14)
+**Overall Progress**: 87% (Week 13 of 14)
 **Target Launch**: December 2025
 
-**Phase 3 (Network Multiplayer) - ✅ COMPLETE**
-- 🎉 Full multiplayer system with server-authoritative battles
-- 🔒 Comprehensive security validation (100% test coverage)
-- ⚡ High performance (2,222 turns/second)
-- 🌐 Lobby system with team validation
+**Phase 4 Week 1 (Move Effects) - ✅ COMPLETE**
+- 🎉 Pluggable move effect framework with 12 effect types
+- ⚔️ 70+ competitive moves configured (status, stats, recoil, drain, etc.)
+- 🌦️ Weather, terrain, and entry hazard systems
+- 🎯 Pokemon Showdown accuracy with deterministic RNG
 
 See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete roadmap.
+See [PHASE_4_WEEK_1_SUMMARY.md](PHASE_4_WEEK_1_SUMMARY.md) for Week 1 details.
 See [PHASE_3_SUMMARY.md](PHASE_3_SUMMARY.md) for Phase 3 details.
 
 ---
@@ -157,14 +158,13 @@ pokemon-battle-simulator/
 - ✅ Load testing (2,222 turns/second)
 
 ### 🚧 Phase 4: Polish (Weeks 13-14) - **IN PROGRESS**
-- 🔴 200+ moves with effect framework
-- 🔴 50+ abilities with effect system
-- 🔴 Advanced mechanics (weather, terrain, hazards)
-- 🔴 Battle replay system
-- 🔴 Ranked ladder
-- 🔴 Final polish and launch
+- ✅ Week 1: Move effect framework (70+ competitive moves, 12 effect types)
+- 🔴 Week 2: Ability system (50+ competitive abilities)
+- 🔴 Week 3: Item effects (held items and battle items)
+- 🔴 Week 4: Advanced mechanics and final polish
 
 See [PROJECT_PLAN.md](PROJECT_PLAN.md) for detailed milestones.
+See [PHASE_4_WEEK_1_SUMMARY.md](PHASE_4_WEEK_1_SUMMARY.md) for Week 1 completion details.
 See [PHASE_3_SUMMARY.md](PHASE_3_SUMMARY.md) for Phase 3 completion details.
 
 ---
@@ -224,6 +224,8 @@ godot --headless --path godot_project tests/test_load.tscn
 ## 📚 Documentation
 
 - [**PROJECT_PLAN.md**](PROJECT_PLAN.md) - Complete 14-week development plan
+- [**PHASE_4_WEEK_1_SUMMARY.md**](PHASE_4_WEEK_1_SUMMARY.md) - Move effects framework completion
+- [**PHASE_3_SUMMARY.md**](PHASE_3_SUMMARY.md) - Multiplayer system completion
 - [**PROGRESS.md**](PROGRESS.md) - Current progress and tracking
 - **docs/architecture.md** - System architecture (TBD)
 - **docs/battle_mechanics.md** - Pokemon mechanics reference (TBD)

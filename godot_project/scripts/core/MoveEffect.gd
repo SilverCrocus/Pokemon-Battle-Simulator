@@ -1,5 +1,5 @@
-class_name MoveEffect
 extends RefCounted
+## NOTE: No class_name to avoid circular dependency with autoloads
 
 ## Base class for move effects
 ##

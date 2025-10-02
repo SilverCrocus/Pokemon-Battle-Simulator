@@ -245,12 +245,13 @@ func _execute_move(queued_action) -> void:  # Type: ActionQueue.QueuedAction
 		if target.is_fainted():
 			BattleEvents.pokemon_fainted.emit(target)
 
-	# Apply move effects using new effect system
-	if not target.is_fainted():
-		_apply_move_effects_new(actor, target, move, damage_dealt, effectiveness, player)
+	# Apply move effects (disabled due to Godot class loading limitation)
+	# TODO: Re-enable when move effect system is properly integrated
+	# if not target.is_fainted():
+	# 	_apply_move_effects_new(actor, target, move, damage_dealt, effectiveness, player)
 
-	# Fallback to old effect system for moves without custom effects
-	if not MoveEffectRegistry.has_effects(move.move_id) and not target.is_fainted():
+	# Use legacy effect system for now
+	if not target.is_fainted():
 		_apply_move_effects_legacy(actor, target, move)
 
 
@@ -310,58 +311,60 @@ func _calculate_move_damage(
 	return DamageCalculatorScript.calculate_damage(params)
 
 
-func _apply_move_effects_new(actor, target, move, damage_dealt: int, type_eff: float, player: int) -> void:
-	"""
-	Apply move effects using the new pluggable effect system.
-
-	Args:
-		actor: BattlePokemon using the move
-		target: BattlePokemon receiving the move
-		move: MoveData being used
-		damage_dealt: Damage dealt by the move (for recoil/drain)
-		type_eff: Type effectiveness multiplier
-		player: Player number (1 or 2)
-	"""
-	# Get registered effects for this move
-	var effects = MoveEffectRegistry.get_move_effects(move.move_id)
-
-	if effects.is_empty():
-		return
-
-	# Build effect context
-	var context = {
-		"attacker": actor,
-		"defender": target,
-		"move": move,
-		"damage_dealt": damage_dealt,
-		"type_effectiveness": type_eff,
-		"state": state,
-		"rng": state._rng,
-		"player": player,
-		"defender_already_moved": false  # TODO: Track this properly
-	}
-
-	# Execute each effect
-	for effect in effects:
-		# Check if effect should execute (based on chance)
-		if not effect.should_execute(state._rng):
-			continue
-
-		# Execute the effect
-		var result = effect.execute(context)
-
-		# Emit events based on effect results
-		if result["success"]:
-			# Print message if provided
-			if result["message"] != "":
-				print("[Effect] %s" % result["message"])
-
-			# Emit specific events based on effect data
-			if result["data"].has("status"):
-				BattleEvents.status_applied.emit(target, result["data"]["status"])
-			elif result["data"].has("flinched"):
-				# TODO: Mark defender as flinched for this turn
-				pass
+# Disabled due to Godot class loading limitation with MoveEffectRegistry
+# TODO: Re-enable when move effect system is properly integrated
+#func _apply_move_effects_new(actor, target, move, damage_dealt: int, type_eff: float, player: int) -> void:
+#	"""
+#	Apply move effects using the new pluggable effect system.
+#
+#	Args:
+#		actor: BattlePokemon using the move
+#		target: BattlePokemon receiving the move
+#		move: MoveData being used
+#		damage_dealt: Damage dealt by the move (for recoil/drain)
+#		type_eff: Type effectiveness multiplier
+#		player: Player number (1 or 2)
+#	"""
+#	# Get registered effects for this move
+#	var effects = MoveEffectRegistry.get_move_effects(move.move_id)
+#
+#	if effects.is_empty():
+#		return
+#
+#	# Build effect context
+#	var context = {
+#		"attacker": actor,
+#		"defender": target,
+#		"move": move,
+#		"damage_dealt": damage_dealt,
+#		"type_effectiveness": type_eff,
+#		"state": state,
+#		"rng": state._rng,
+#		"player": player,
+#		"defender_already_moved": false  # TODO: Track this properly
+#	}
+#
+#	# Execute each effect
+#	for effect in effects:
+#		# Check if effect should execute (based on chance)
+#		if not effect.should_execute(state._rng):
+#			continue
+#
+#		# Execute the effect
+#		var result = effect.execute(context)
+#
+#		# Emit events based on effect results
+#		if result["success"]:
+#			# Print message if provided
+#			if result["message"] != "":
+#				print("[Effect] %s" % result["message"])
+#
+#			# Emit specific events based on effect data
+#			if result["data"].has("status"):
+#				BattleEvents.status_applied.emit(target, result["data"]["status"])
+#			elif result["data"].has("flinched"):
+#				# TODO: Mark defender as flinched for this turn
+#				pass
 
 
 func _apply_move_effects_legacy(actor, target, move) -> void:
