@@ -24,6 +24,7 @@ BattleController="*res://autoloads/BattleController.gd"
 BattleEvents="*res://autoloads/BattleEvents.gd"
 BattleTheme="*res://scripts/ui/theme/BattleTheme.gd"
 AudioManager="*res://autoloads/AudioManager.gd"
+BattleServer="*res://scripts/networking/BattleServer.gd"
 
 [display]
 
