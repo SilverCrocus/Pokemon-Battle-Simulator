@@ -86,6 +86,6 @@ func _get_stat_change_description(change: int) -> String:
 		1:
 			return base_verb
 		2:
-		return base_verb + " sharply"
+			return base_verb + " sharply"
 		_:
 			return base_verb + " drastically"
