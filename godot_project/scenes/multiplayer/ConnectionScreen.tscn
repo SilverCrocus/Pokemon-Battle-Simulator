@@ -1,0 +1,133 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8vk3m2n7p9qw"]
+
+[ext_resource type="Script" path="res://scripts/ui/ConnectionController.gd" id="1_controller"]
+
+[node name="ConnectionScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_controller")
+
+[node name="BackgroundLayer" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="Background" type="ColorRect" parent="BackgroundLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.094, 0.094, 0.125, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ConnectionPanel" type="PanelContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(600, 500)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/ConnectionPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/ConnectionPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "MULTIPLAYER CONNECTION"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Connect to a Battle Server"
+horizontal_alignment = 1
+
+[node name="Spacer1" type="Control" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="ServerDetailsLabel" type="Label" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Server Details"
+
+[node name="ServerIPContainer" type="HBoxContainer" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="IPLabel" type="Label" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer/ServerIPContainer"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+text = "Server IP:"
+
+[node name="ServerIPInput" type="LineEdit" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer/ServerIPContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "127.0.0.1"
+caret_blink = true
+
+[node name="ServerPortContainer" type="HBoxContainer" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="PortLabel" type="Label" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer/ServerPortContainer"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+text = "Port:"
+
+[node name="ServerPortInput" type="LineEdit" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer/ServerPortContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "7777"
+caret_blink = true
+
+[node name="Spacer2" type="Control" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="QuickConnectLabel" type="Label" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Quick Connect"
+
+[node name="LocalhostButton" type="Button" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+text = "Connect to Localhost (127.0.0.1:7777)"
+
+[node name="Spacer3" type="Control" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StatusLabel" type="Label" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Ready to connect"
+horizontal_alignment = 1
+
+[node name="Spacer4" type="Control" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="ActionButtons" type="HBoxContainer" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="BackButton" type="Button" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer/ActionButtons"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "Back to Menu"
+
+[node name="ConnectButton" type="Button" parent="CenterContainer/ConnectionPanel/MarginContainer/VBoxContainer/ActionButtons"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "Connect"

@@ -52,10 +52,15 @@ func _ready() -> void:
 
 	# Initialize UI
 	_show_lobby_browser()
-	_update_status("Not connected to server")
 
-	# Load test team for development
-	_load_test_team()
+	# Check connection status
+	if BattleClient.is_connected_to_server():
+		_update_status("Connected to server")
+	else:
+		_update_status("Not connected to server")
+
+	# Load user's saved team
+	_load_saved_team()
 
 
 func set_team_data(team_data: Dictionary) -> void:
@@ -64,28 +69,36 @@ func set_team_data(team_data: Dictionary) -> void:
 	_update_team_preview()
 
 
-func _load_test_team() -> void:
-	"""Load a test team for development."""
-	# Create a simple test team
-	var species = DataManager.get_pokemon(25)  # Pikachu
-	var move1 = DataManager.get_move(85)
-	var move2 = DataManager.get_move(98)
+func _load_saved_team() -> void:
+	"""Load user's saved team from file."""
+	if not FileAccess.file_exists("user://team.json"):
+		print("[LobbyController] No saved team found")
+		_update_status("No team found - please create a team first")
+		create_lobby_button.disabled = true
+		join_code_button.disabled = true
+		return
 
-	var pikachu = BattlePokemon.new(
-		species, 50,
-		{"hp": 31, "atk": 31, "def": 31, "spa": 31, "spd": 31, "spe": 31},
-		{"hp": 4, "atk": 0, "def": 0, "spa": 252, "spd": 0, "spe": 252},
-		"Timid",
-		[move1, move2],
-		"",
-		"",
-		"TestPikachu"
-	)
+	var file = FileAccess.open("user://team.json", FileAccess.READ)
+	if not file:
+		print("[LobbyController] Error: Could not load team file")
+		_update_status("Error loading team")
+		create_lobby_button.disabled = true
+		join_code_button.disabled = true
+		return
 
-	current_team_data = {
-		"pokemon": [pikachu.to_dict()]
-	}
+	var json_string = file.get_as_text()
+	file.close()
 
+	var json = JSON.new()
+	if json.parse(json_string) != OK:
+		print("[LobbyController] Error: Invalid team JSON")
+		_update_status("Invalid team file")
+		create_lobby_button.disabled = true
+		join_code_button.disabled = true
+		return
+
+	current_team_data = json.data
+	print("[LobbyController] Loaded team with %d Pokemon" % current_team_data.pokemon.size())
 	_update_team_preview()
 
 

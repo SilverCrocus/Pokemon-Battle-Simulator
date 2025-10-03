@@ -179,9 +179,10 @@ func _on_quick_battle_pressed() -> void:
 
 
 func _on_multiplayer_pressed() -> void:
-	"""Navigate to multiplayer (not implemented yet)."""
+	"""Navigate to multiplayer connection screen."""
 	_play_button_sound()
-	print("[MainMenu] Multiplayer not yet implemented")
+	print("[MainMenu] Opening Multiplayer")
+	get_tree().change_scene_to_file("res://scenes/multiplayer/ConnectionScreen.tscn")
 
 
 func _on_settings_pressed() -> void:

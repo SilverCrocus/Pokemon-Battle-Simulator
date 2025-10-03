@@ -77,8 +77,7 @@ text = "Quick Battle (vs AI)"
 [node name="MultiplayerButton" type="Button" parent="CenterContainer/MenuPanel/MarginContainer/VBoxContainer/MenuButtons"]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-disabled = true
-text = "Multiplayer (Coming Soon)"
+text = "Multiplayer"
 
 [node name="SettingsButton" type="Button" parent="CenterContainer/MenuPanel/MarginContainer/VBoxContainer/MenuButtons"]
 custom_minimum_size = Vector2(0, 50)
