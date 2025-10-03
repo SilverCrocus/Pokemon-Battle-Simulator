@@ -41,6 +41,7 @@ const MoveSelectorScript = preload("res://scripts/ui/components/MoveSelector.gd"
 	$MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/MovesSection/MovesGrid/Move4
 ]
 @onready var clear_button: Button = $MainContainer/CenterPanel/MarginContainer/VBoxContainer/ActionButtons/ClearButton
+@onready var autofill_button: Button = $MainContainer/CenterPanel/MarginContainer/VBoxContainer/ActionButtons/AutoFillButton
 @onready var add_to_team_button: Button = $MainContainer/CenterPanel/MarginContainer/VBoxContainer/ActionButtons/AddToTeamButton
 @onready var stat_sliders_container: VBoxContainer = $MainContainer/CenterPanel/MarginContainer/VBoxContainer/EditorScroll/EditorContent/StatSlidersContainer
 
@@ -143,6 +144,7 @@ func _connect_signals() -> void:
 	gen_filter.item_selected.connect(_on_filter_changed)
 
 	clear_button.pressed.connect(_on_clear_pressed)
+	autofill_button.pressed.connect(_on_autofill_pressed)
 	add_to_team_button.pressed.connect(_on_add_to_team_pressed)
 
 	save_button.pressed.connect(_on_save_team_pressed)
@@ -327,6 +329,72 @@ func _on_clear_pressed() -> void:
 		button.text = "- Select Move -"
 
 	add_to_team_button.disabled = true
+
+
+func _on_autofill_pressed() -> void:
+	"""Auto-fill complete competitive build: moves, EVs, Nature, Ability."""
+	if not current_pokemon:
+		print("[TeamBuilder] No Pokemon selected for auto-fill")
+		return
+
+	print("[TeamBuilder] Auto-filling meta build for %s" % current_pokemon.name)
+
+	# Get meta moveset
+	var meta_moves = _get_meta_moveset(current_pokemon.national_dex_number)
+
+	# Use fallback if no preset available
+	if meta_moves.is_empty():
+		meta_moves = _get_fallback_moveset()
+		print("[TeamBuilder] Using fallback moveset (no preset found)")
+
+	# Fill all 4 move slots
+	current_moves.clear()
+	for i in range(min(4, meta_moves.size())):
+		var move_identifier = meta_moves[i]
+		var move_data = _find_move_by_identifier(move_identifier)
+
+		if move_data:
+			current_moves.append(move_data)
+			move_buttons[i].text = move_data.name.to_upper()
+
+			# Color by type
+			var type_color = BattleTheme.get_type_color(move_data.type)
+			var style = StyleBoxFlat.new()
+			style.bg_color = type_color
+			style.border_width_left = 2
+			style.border_width_top = 2
+			style.border_width_right = 2
+			style.border_width_bottom = 2
+			style.border_color = type_color.lightened(0.3)
+			move_buttons[i].add_theme_stylebox_override("normal", style)
+		else:
+			print("[TeamBuilder] Warning: Move '%s' not found" % move_identifier)
+
+	# Fill remaining slots if needed
+	while current_moves.size() < 4:
+		move_buttons[current_moves.size()].text = "- Select Move -"
+		current_moves.append(null)
+
+	# Set optimal EV spread based on Pokemon stats
+	var optimal_evs = _get_optimal_evs()
+
+	# Set optimal Nature based on stats
+	var optimal_nature = _get_optimal_nature()
+	var nature_index = NATURES.find(optimal_nature)
+	if nature_index >= 0:
+		nature_select.selected = nature_index
+
+	# Set EVs and IVs (max IVs, optimal EVs)
+	if stat_sliders:
+		stat_sliders.current_evs = optimal_evs
+		stat_sliders.current_ivs = {"hp": 31, "atk": 31, "def": 31, "spa": 31, "spd": 31, "spe": 31}
+		stat_sliders._update_all_sliders()
+		stat_sliders._update_stat_display()
+
+	# Select best ability (prefer hidden ability if it's better, otherwise first ability)
+	_select_optimal_ability()
+
+	print("[TeamBuilder] Auto-fill complete: %d moves, Nature: %s, EVs: %s" % [current_moves.size(), optimal_nature, optimal_evs])
 
 
 func _on_add_to_team_pressed() -> void:
@@ -617,3 +685,223 @@ func _load_pokemon_into_editor(battle_pokemon) -> void:
 	add_to_team_button.disabled = false
 
 	print("[TeamBuilder] Loaded %s into editor" % current_pokemon.name)
+
+
+# ==================== Auto-Fill Helper Functions ====================
+
+func _get_meta_moveset(national_dex_number: int) -> Array:
+	"""
+	Get competitive moveset for a Pokemon by National Dex number.
+	Returns array of move identifiers (e.g., ["thunderbolt", "ice-beam"]).
+	"""
+	# Meta movesets database - Gen 1-3 competitive sets
+	var meta_movesets = {
+		# Gen 1 Starters
+		3: ["sludge-bomb", "earthquake", "sleep-powder", "hidden-power"],  # Venusaur
+		6: ["fire-blast", "air-slash", "dragon-pulse", "roost"],  # Charizard
+		9: ["surf", "ice-beam", "rapid-spin", "toxic"],  # Blastoise
+
+		# Gen 1 Legendaries
+		144: ["ice-beam", "hurricane", "roost", "u-turn"],  # Articuno
+		145: ["thunderbolt", "heat-wave", "roost", "volt-switch"],  # Zapdos
+		146: ["fire-blast", "hurricane", "roost", "u-turn"],  # Moltres
+		150: ["psystrike", "ice-beam", "aura-sphere", "recover"],  # Mewtwo
+		151: ["psychic", "ice-beam", "thunderbolt", "u-turn"],  # Mew
+
+		# Gen 1 Popular
+		25: ["thunderbolt", "surf", "hidden-power", "volt-switch"],  # Pikachu
+		94: ["shadow-ball", "sludge-bomb", "focus-blast", "thunderbolt"],  # Gengar
+		130: ["waterfall", "ice-fang", "earthquake", "dragon-dance"],  # Gyarados
+		131: ["surf", "ice-beam", "thunderbolt", "recover"],  # Lapras
+		143: ["body-slam", "earthquake", "fire-blast", "rest"],  # Snorlax
+
+		# Gen 2 Starters
+		154: ["leaf-blade", "earthquake", "synthesis", "hidden-power"],  # Meganium
+		157: ["eruption", "fire-blast", "earthquake", "hidden-power"],  # Typhlosion
+		160: ["waterfall", "ice-punch", "earthquake", "dragon-dance"],  # Feraligatr
+
+		# Gen 2 Legendaries
+		243: ["thunderbolt", "volt-switch", "hidden-power", "extreme-speed"],  # Raikou
+		244: ["fire-blast", "eruption", "hidden-power", "extreme-speed"],  # Entei
+		245: ["surf", "ice-beam", "calm-mind", "rest"],  # Suicune
+		249: ["aeroblast", "earthquake", "recover", "toxic"],  # Lugia
+		250: ["sacred-fire", "earthquake", "brave-bird", "recover"],  # Ho-Oh
+
+		# Gen 2 Popular
+		181: ["thunderbolt", "volt-switch", "focus-blast", "cotton-guard"],  # Ampharos
+		186: ["surf", "ice-beam", "focus-blast", "toxic"],  # Politoed
+		197: ["foul-play", "toxic", "moonlight", "protect"],  # Umbreon
+		248: ["stone-edge", "crunch", "earthquake", "dragon-dance"],  # Tyranitar
+
+		# Gen 3 Starters
+		254: ["leaf-blade", "dragon-claw", "earthquake", "swords-dance"],  # Sceptile
+		257: ["fire-blast", "focus-blast", "hidden-power", "earthquake"],  # Blaziken
+		260: ["surf", "ice-beam", "earthquake", "stealth-rock"],  # Swampert
+
+		# Gen 3 Legendaries & Dragons
+		373: ["outrage", "earthquake", "fire-blast", "dragon-dance"],  # Salamence
+		376: ["meteor-mash", "earthquake", "zen-headbutt", "bullet-punch"],  # Metagross
+		380: ["psychic", "surf", "ice-beam", "calm-mind"],  # Latias
+		381: ["draco-meteor", "psychic", "surf", "roost"],  # Latios
+		382: ["water-spout", "ice-beam", "thunder", "origin-pulse"],  # Kyogre
+		383: ["precipice-blades", "stone-edge", "fire-punch", "swords-dance"],  # Groudon
+		384: ["dragon-ascent", "extreme-speed", "earthquake", "dragon-claw"],  # Rayquaza
+
+		# Gen 3 Popular
+		282: ["psychic", "moonblast", "thunderbolt", "calm-mind"],  # Gardevoir
+		289: ["facade", "earthquake", "shadow-claw", "slack-off"],  # Slaking
+		306: ["iron-head", "earthquake", "stone-edge", "rock-polish"],  # Aggron
+		350: ["surf", "ice-beam", "recover", "scald"],  # Milotic
+	}
+
+	if national_dex_number in meta_movesets:
+		return meta_movesets[national_dex_number]
+
+	return []
+
+
+func _get_fallback_moveset() -> Array:
+	"""
+	Generate fallback moveset based on stats and types.
+	Selects highest power STAB moves + coverage.
+	"""
+	if not current_pokemon:
+		return []
+
+	var stab_moves = []
+	var coverage_moves = []
+
+	# Get Pokemon types
+	var types = [current_pokemon.type1]
+	if current_pokemon.type2 and current_pokemon.type2 != "":
+		types.append(current_pokemon.type2)
+
+	# Get all legal moves for this Pokemon
+	var legal_moves = DataManager.get_pokemon_moves(current_pokemon.national_dex_number)
+	if not legal_moves or legal_moves.is_empty():
+		return []
+
+	# Find STAB moves (Same Type Attack Bonus)
+	for move_data in legal_moves:
+		if move_data.type in types and move_data.power and move_data.power > 0:
+			stab_moves.append({"move": move_data.name.to_lower().replace(" ", "-"), "power": move_data.power})
+
+	# Find coverage moves (different types with high power)
+	for move_data in legal_moves:
+		if move_data.type not in types and move_data.power and move_data.power >= 70:
+			coverage_moves.append({"move": move_data.name.to_lower().replace(" ", "-"), "power": move_data.power})
+
+	# Sort by power
+	stab_moves.sort_custom(func(a, b): return a.power > b.power)
+	coverage_moves.sort_custom(func(a, b): return a.power > b.power)
+
+	# Build moveset: 2 STAB + 2 coverage
+	var result = []
+	for i in range(min(2, stab_moves.size())):
+		result.append(stab_moves[i].move)
+
+	for i in range(min(2, coverage_moves.size())):
+		result.append(coverage_moves[i].move)
+
+	# Fill remaining slots with any high power moves
+	while result.size() < 4 and coverage_moves.size() > result.size() - 2:
+		var idx = result.size() - 2
+		if idx < coverage_moves.size():
+			result.append(coverage_moves[idx].move)
+		else:
+			break
+
+	return result
+
+
+func _find_move_by_identifier(identifier: String):
+	"""Find a MoveData by identifier string (e.g., 'fire-blast')."""
+	# Get all legal moves for current Pokemon
+	var legal_moves = DataManager.get_pokemon_moves(current_pokemon.national_dex_number)
+	if not legal_moves:
+		return null
+
+	# Search for move by identifier
+	for move_data in legal_moves:
+		var move_identifier = move_data.name.to_lower().replace(" ", "-")
+		if move_identifier == identifier:
+			return move_data
+
+	return null
+
+
+func _get_optimal_evs() -> Dictionary:
+	"""
+	Calculate optimal EV spread based on Pokemon base stats.
+	Returns 252/252/4 spread focusing on two highest stats.
+	"""
+	if not current_pokemon:
+		return {"hp": 0, "atk": 0, "def": 0, "spa": 0, "spd": 0, "spe": 0}
+
+	# Determine if Pokemon is physical or special attacker
+	var is_physical = current_pokemon.base_atk > current_pokemon.base_spa
+	var is_special = current_pokemon.base_spa > current_pokemon.base_atk
+
+	# Determine primary offensive stat
+	var primary_stat = "atk" if is_physical else "spa"
+
+	# Speed is almost always a priority stat in competitive play
+	var evs = {"hp": 4, "atk": 0, "def": 0, "spa": 0, "spd": 0, "spe": 252}
+
+	# Allocate 252 EVs to primary offensive stat
+	evs[primary_stat] = 252
+
+	# Check if this is a defensive Pokemon (low offensive stats, high bulk)
+	var avg_offensive = (current_pokemon.base_atk + current_pokemon.base_spa) / 2.0
+	var avg_defensive = (current_pokemon.base_def + current_pokemon.base_spd) / 2.0
+
+	if avg_defensive > avg_offensive + 20:
+		# Defensive spread: HP + highest defensive stat
+		evs = {"hp": 252, "atk": 0, "def": 0, "spa": 0, "spd": 0, "spe": 4}
+		if current_pokemon.base_def > current_pokemon.base_spd:
+			evs["def"] = 252
+		else:
+			evs["spd"] = 252
+
+	return evs
+
+
+func _get_optimal_nature() -> String:
+	"""
+	Determine optimal nature based on Pokemon base stats.
+	Returns nature name (e.g., "Jolly", "Timid", "Adamant").
+	"""
+	if not current_pokemon:
+		return "Hardy"  # Neutral nature
+
+	# Determine if Pokemon is physical or special attacker
+	var is_physical = current_pokemon.base_atk > current_pokemon.base_spa
+	var is_special = current_pokemon.base_spa > current_pokemon.base_atk
+
+	# Check if Pokemon is fast (Speed > 100) or slow
+	var is_fast = current_pokemon.base_spe >= 100
+
+	# Determine optimal nature
+	if is_physical:
+		if is_fast:
+			return "Jolly"  # +Spe, -SpA
+		else:
+			return "Adamant"  # +Atk, -SpA
+	elif is_special:
+		if is_fast:
+			return "Timid"  # +Spe, -Atk
+		else:
+			return "Modest"  # +SpA, -Atk
+	else:
+		# Balanced attacker, prioritize speed
+		return "Jolly" if is_fast else "Adamant"
+
+
+func _select_optimal_ability() -> void:
+	"""Select the best ability for this Pokemon (prefer hidden if better)."""
+	if not current_pokemon or ability_select.item_count == 0:
+		return
+
+	# For now, just select the first ability
+	# TODO: Add ability preference logic for specific Pokemon
+	ability_select.selected = 0

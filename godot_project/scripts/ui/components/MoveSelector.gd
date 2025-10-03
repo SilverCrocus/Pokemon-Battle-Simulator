@@ -231,7 +231,7 @@ func _populate_move_list() -> void:
 		# Check if already selected
 		var is_duplicate = false
 		for existing_move in existing_moves:
-			if existing_move and existing_move.id == move_data.id:
+			if existing_move and existing_move.move_id == move_data.move_id:
 				is_duplicate = true
 				move_button.disabled = true
 				move_button.text += " (Already Selected)"

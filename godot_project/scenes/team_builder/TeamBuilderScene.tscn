@@ -228,6 +228,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Clear"
 
+[node name="AutoFillButton" type="Button" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/ActionButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "⚡ Auto-Fill Meta Build"
+tooltip_text = "Automatically fill moves, EVs, nature, and ability with competitive recommendations"
+
 [node name="AddToTeamButton" type="Button" parent="MainContainer/CenterPanel/MarginContainer/VBoxContainer/ActionButtons"]
 layout_mode = 2
 size_flags_horizontal = 3
