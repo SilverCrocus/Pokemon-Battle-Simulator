@@ -417,16 +417,29 @@ func _on_add_to_team_pressed() -> void:
 	# Get current customization
 	var level = int(level_spinbox.value)
 	var nature = NATURES[nature_select.selected]
-	var ability_text = ability_select.get_item_text(ability_select.selected)
 
-	# Extract ability name (remove "(Hidden)" suffix if present)
-	var ability = ability_text.trim_suffix(" (Hidden)") if ability_text.ends_with("(Hidden)") else ability_text
+	# Get ability - must have a valid ability
+	var ability = ""
+	if ability_select.item_count > 0:
+		var ability_text = ability_select.get_item_text(ability_select.selected)
+		# Extract ability name (remove "(Hidden)" suffix if present)
+		ability = ability_text.trim_suffix(" (Hidden)") if ability_text.ends_with("(Hidden)") else ability_text
 
-	# If no valid ability, use first ability from species data
-	if ability == "No Ability" and current_pokemon.abilities.size() > 0:
-		ability = current_pokemon.abilities[0]
+	# Fallback chain for ability
+	if ability.is_empty() or ability == "No Ability":
+		# Try regular abilities first
+		if current_pokemon.abilities and current_pokemon.abilities.size() > 0:
+			ability = current_pokemon.abilities[0]
+		# If no regular abilities, use hidden ability
+		elif current_pokemon.hidden_ability and not current_pokemon.hidden_ability.is_empty():
+			ability = current_pokemon.hidden_ability
+		else:
+			# Last resort - some Pokemon might have no abilities loaded
+			push_warning("[TeamBuilder] No ability found for %s, using empty string" % current_pokemon.name)
 
 	var nickname = nickname_edit.text if not nickname_edit.text.is_empty() else ""
+
+	print("[TeamBuilder] Creating Pokemon with ability: '%s'" % ability)
 
 	# Get EVs and IVs from stat sliders
 	var evs = stat_sliders.get_evs() if stat_sliders else {"hp": 0, "atk": 0, "def": 0, "spa": 0, "spd": 0, "spe": 0}
