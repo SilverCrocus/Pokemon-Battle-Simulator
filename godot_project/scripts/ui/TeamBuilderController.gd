@@ -776,20 +776,23 @@ func _get_fallback_moveset() -> Array:
 	if current_pokemon.type2 and current_pokemon.type2 != "":
 		types.append(current_pokemon.type2)
 
-	# Get all legal moves for this Pokemon
-	var legal_moves = DataManager.get_pokemon_moves(current_pokemon.national_dex_number)
-	if not legal_moves or legal_moves.is_empty():
+	# Get all legal moves from learnset
+	if not current_pokemon.learnset or current_pokemon.learnset.is_empty():
 		return []
 
-	# Find STAB moves (Same Type Attack Bonus)
-	for move_data in legal_moves:
-		if move_data.type in types and move_data.power and move_data.power > 0:
-			stab_moves.append({"move": move_data.name.to_lower().replace(" ", "-"), "power": move_data.power})
+	# Check each move in the learnset
+	for move_name in current_pokemon.learnset.keys():
+		# Try to get move data by name
+		var move_data = DataManager.get_move_by_name(move_name)
+		if not move_data:
+			continue
 
-	# Find coverage moves (different types with high power)
-	for move_data in legal_moves:
-		if move_data.type not in types and move_data.power and move_data.power >= 70:
-			coverage_moves.append({"move": move_data.name.to_lower().replace(" ", "-"), "power": move_data.power})
+		# Find STAB moves (Same Type Attack Bonus)
+		if move_data.type in types and move_data.power and move_data.power > 0:
+			stab_moves.append({"move": move_name.to_lower().replace(" ", "-"), "power": move_data.power})
+		# Find coverage moves (different types with high power)
+		elif move_data.type not in types and move_data.power and move_data.power >= 70:
+			coverage_moves.append({"move": move_name.to_lower().replace(" ", "-"), "power": move_data.power})
 
 	# Sort by power
 	stab_moves.sort_custom(func(a, b): return a.power > b.power)
@@ -816,18 +819,25 @@ func _get_fallback_moveset() -> Array:
 
 func _find_move_by_identifier(identifier: String):
 	"""Find a MoveData by identifier string (e.g., 'fire-blast')."""
-	# Get all legal moves for current Pokemon
-	var legal_moves = DataManager.get_pokemon_moves(current_pokemon.national_dex_number)
-	if not legal_moves:
+	if not current_pokemon:
 		return null
 
-	# Search for move by identifier
-	for move_data in legal_moves:
-		var move_identifier = move_data.name.to_lower().replace(" ", "-")
-		if move_identifier == identifier:
-			return move_data
+	# Convert identifier to proper move name format
+	# identifier is "fire-blast", move name in learnset is "fire-blast" or "Fire Blast"
+	var move_name_kebab = identifier.to_lower()
+	var move_name_spaces = identifier.replace("-", " ")
 
-	return null
+	# First check if it's in the Pokemon's learnset
+	if not (move_name_kebab in current_pokemon.learnset or move_name_spaces in current_pokemon.learnset):
+		# Move not in learnset, return null
+		return null
+
+	# Try to get move data by name (try both formats)
+	var move_data = DataManager.get_move_by_name(move_name_kebab)
+	if not move_data:
+		move_data = DataManager.get_move_by_name(move_name_spaces)
+
+	return move_data
 
 
 func _get_optimal_evs() -> Dictionary:
