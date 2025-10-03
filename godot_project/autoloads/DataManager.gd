@@ -121,8 +121,30 @@ func get_move_by_name(move_name: String) -> MoveData:
 	if name_lower in move_by_name:
 		return move_by_name[name_lower]
 
-	# Fallback search
-	push_warning("[DataManager] Move '%s' not in cache" % move_name)
+	# Fallback: Search through move files (slow but works)
+	# Move files are named by ID (1.tres, 2.tres, etc.)
+	# We need to scan through them to find the matching name
+	var dir = DirAccess.open(MOVE_PATH)
+	if not dir:
+		push_warning("[DataManager] Could not open move directory")
+		return null
+
+	dir.list_dir_begin()
+	var file_name = dir.get_next()
+
+	while file_name != "":
+		if file_name.ends_with(".tres"):
+			var move_id = int(file_name.trim_suffix(".tres"))
+			var move_data = get_move(move_id)
+
+			if move_data and move_data.name.to_lower() == name_lower:
+				# Cache it for future lookups
+				move_by_name[name_lower] = move_data
+				return move_data
+
+		file_name = dir.get_next()
+
+	dir.list_dir_end()
 	return null
 
 
