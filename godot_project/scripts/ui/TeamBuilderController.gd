@@ -159,15 +159,15 @@ func _load_pokemon_data() -> void:
 	"""Load all Pokemon from DataManager."""
 	print("[TeamBuilder] Loading Pokemon data...")
 
-	# For now, load a subset for testing
-	# TODO: Implement pagination or lazy loading for all 1,302
-	for id in range(1, 152):  # Gen 1 for now
+	# Load Gen 1-3 Pokemon (National Dex 1-386)
+	# Includes: Kanto, Johto, Hoenn (Salamence #373, Rayquaza #384)
+	for id in range(1, 387):
 		var pokemon_data = DataManager.get_pokemon(id)
 		if pokemon_data:
 			all_pokemon.append(pokemon_data)
 
 	filtered_pokemon = all_pokemon.duplicate()
-	print("[TeamBuilder] Loaded %d Pokemon" % all_pokemon.size())
+	print("[TeamBuilder] Loaded %d Pokemon (Gen 1-3)" % all_pokemon.size())
 
 
 func _populate_pokemon_browser() -> void:

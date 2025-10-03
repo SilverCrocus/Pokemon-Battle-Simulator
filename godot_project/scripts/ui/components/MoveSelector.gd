@@ -41,6 +41,7 @@ var all_legal_moves: Array = []  # Array of move data objects
 var filtered_moves: Array = []
 var selected_move = null
 var existing_moves: Array = []  # Moves already selected (to prevent duplicates)
+var current_pokemon_data = null  # Current Pokemon being edited
 
 # ==================== Lifecycle ====================
 
@@ -69,6 +70,7 @@ func open_for_pokemon(pokemon_data, current_moves: Array) -> void:
 	@param pokemon_data: Pokemon species data
 	@param current_moves: Array of already selected moves
 	"""
+	current_pokemon_data = pokemon_data
 	existing_moves = current_moves.duplicate()
 
 	# Get Pokemon's learnset
@@ -124,6 +126,13 @@ func _create_ui() -> void:
 	filter_container.add_child(category_filter)
 
 	main_container.add_child(filter_container)
+
+	# Auto-fill button
+	var autofill_button = Button.new()
+	autofill_button.text = "⚡ Auto-Fill Meta Moveset"
+	autofill_button.tooltip_text = "Automatically select competitive moves for this Pokemon"
+	autofill_button.pressed.connect(_on_autofill_pressed)
+	main_container.add_child(autofill_button)
 
 	# Content area (list + details)
 	var content_split = HSplitContainer.new()
@@ -352,3 +361,142 @@ func _get_pokemon_learnset(pokemon_data) -> Array:
 			all_move_ids.append(i)
 
 	return all_move_ids
+
+
+func _on_autofill_pressed() -> void:
+	"""Auto-fill meta moveset for the current Pokemon."""
+	if not current_pokemon_data:
+		return
+
+	var meta_moves = _get_meta_moveset(current_pokemon_data.national_dex_number)
+
+	if meta_moves.is_empty():
+		# Fallback: select highest power STAB moves
+		meta_moves = _get_fallback_moveset(current_pokemon_data)
+
+	# Emit signals for each move
+	for move_name in meta_moves:
+		# Find the move data by name (MoveData uses .name, not .identifier)
+		for move_data in all_legal_moves:
+			if move_data.name.to_lower().replace(" ", "-") == move_name:
+				move_selected.emit(move_data)
+				break
+
+	hide()
+
+
+func _get_meta_moveset(national_dex_number: int) -> Array:
+	"""
+	Get competitive moveset for a Pokemon by National Dex number.
+	Returns array of move identifiers (e.g., ["thunderbolt", "ice-beam"]).
+	"""
+	# Meta movesets database - Gen 1-3 competitive sets
+	var meta_movesets = {
+		# Gen 1 Starters
+		3: ["sludge-bomb", "earthquake", "sleep-powder", "hidden-power"],  # Venusaur
+		6: ["fire-blast", "air-slash", "dragon-pulse", "roost"],  # Charizard
+		9: ["surf", "ice-beam", "rapid-spin", "toxic"],  # Blastoise
+
+		# Gen 1 Legendaries
+		144: ["ice-beam", "hurricane", "roost", "u-turn"],  # Articuno
+		145: ["thunderbolt", "heat-wave", "roost", "volt-switch"],  # Zapdos
+		146: ["fire-blast", "hurricane", "roost", "u-turn"],  # Moltres
+		150: ["psystrike", "ice-beam", "aura-sphere", "recover"],  # Mewtwo
+		151: ["psychic", "ice-beam", "thunderbolt", "u-turn"],  # Mew
+
+		# Gen 1 Popular
+		25: ["thunderbolt", "surf", "hidden-power", "volt-switch"],  # Pikachu
+		94: ["shadow-ball", "sludge-bomb", "focus-blast", "thunderbolt"],  # Gengar
+		130: ["waterfall", "ice-fang", "earthquake", "dragon-dance"],  # Gyarados
+		131: ["surf", "ice-beam", "thunderbolt", "recover"],  # Lapras
+		143: ["body-slam", "earthquake", "fire-blast", "rest"],  # Snorlax
+
+		# Gen 2 Starters
+		154: ["leaf-blade", "earthquake", "synthesis", "hidden-power"],  # Meganium
+		157: ["eruption", "fire-blast", "earthquake", "hidden-power"],  # Typhlosion
+		160: ["waterfall", "ice-punch", "earthquake", "dragon-dance"],  # Feraligatr
+
+		# Gen 2 Legendaries
+		243: ["thunderbolt", "volt-switch", "hidden-power", "extreme-speed"],  # Raikou
+		244: ["fire-blast", "eruption", "hidden-power", "extreme-speed"],  # Entei
+		245: ["surf", "ice-beam", "calm-mind", "rest"],  # Suicune
+		249: ["aeroblast", "earthquake", "recover", "toxic"],  # Lugia
+		250: ["sacred-fire", "earthquake", "brave-bird", "recover"],  # Ho-Oh
+
+		# Gen 2 Popular
+		181: ["thunderbolt", "volt-switch", "focus-blast", "cotton-guard"],  # Ampharos
+		186: ["surf", "ice-beam", "focus-blast", "toxic"],  # Politoed
+		197: ["foul-play", "toxic", "moonlight", "protect"],  # Umbreon
+		248: ["stone-edge", "crunch", "earthquake", "dragon-dance"],  # Tyranitar
+
+		# Gen 3 Starters
+		254: ["leaf-blade", "dragon-claw", "earthquake", "swords-dance"],  # Sceptile
+		257: ["fire-blast", "focus-blast", "hidden-power", "earthquake"],  # Blaziken
+		260: ["surf", "ice-beam", "earthquake", "stealth-rock"],  # Swampert
+
+		# Gen 3 Legendaries & Dragons
+		373: ["outrage", "earthquake", "fire-blast", "dragon-dance"],  # Salamence
+		376: ["meteor-mash", "earthquake", "zen-headbutt", "bullet-punch"],  # Metagross
+		380: ["psychic", "surf", "ice-beam", "calm-mind"],  # Latias
+		381: ["draco-meteor", "psychic", "surf", "roost"],  # Latios
+		382: ["water-spout", "ice-beam", "thunder", "origin-pulse"],  # Kyogre
+		383: ["precipice-blades", "stone-edge", "fire-punch", "swords-dance"],  # Groudon
+		384: ["dragon-ascent", "extreme-speed", "earthquake", "dragon-claw"],  # Rayquaza
+
+		# Gen 3 Popular
+		282: ["psychic", "moonblast", "thunderbolt", "calm-mind"],  # Gardevoir
+		289: ["facade", "earthquake", "shadow-claw", "slack-off"],  # Slaking
+		306: ["iron-head", "earthquake", "stone-edge", "rock-polish"],  # Aggron
+		350: ["surf", "ice-beam", "recover", "scald"],  # Milotic
+	}
+
+	if national_dex_number in meta_movesets:
+		return meta_movesets[national_dex_number]
+
+	return []
+
+
+func _get_fallback_moveset(pokemon_data) -> Array:
+	"""
+	Generate fallback moveset based on stats and types.
+	Selects highest power STAB moves + coverage.
+	"""
+	var stab_moves = []
+	var coverage_moves = []
+
+	# Get Pokemon types
+	var types = [pokemon_data.type1]
+	if pokemon_data.type2 and pokemon_data.type2 != "":
+		types.append(pokemon_data.type2)
+
+	# Find STAB moves (Same Type Attack Bonus)
+	for move_data in all_legal_moves:
+		if move_data.type in types and move_data.power and move_data.power > 0:
+			stab_moves.append({"move": move_data.name.to_lower().replace(" ", "-"), "power": move_data.power})
+
+	# Find coverage moves (different types with high power)
+	for move_data in all_legal_moves:
+		if move_data.type not in types and move_data.power and move_data.power >= 70:
+			coverage_moves.append({"move": move_data.name.to_lower().replace(" ", "-"), "power": move_data.power})
+
+	# Sort by power
+	stab_moves.sort_custom(func(a, b): return a.power > b.power)
+	coverage_moves.sort_custom(func(a, b): return a.power > b.power)
+
+	# Build moveset: 2 STAB + 2 coverage
+	var result = []
+	for i in range(min(2, stab_moves.size())):
+		result.append(stab_moves[i].move)
+
+	for i in range(min(2, coverage_moves.size())):
+		result.append(coverage_moves[i].move)
+
+	# Fill remaining slots with any high power moves
+	while result.size() < 4 and coverage_moves.size() > result.size() - 2:
+		var idx = result.size() - 2
+		if idx < coverage_moves.size():
+			result.append(coverage_moves[idx].move)
+		else:
+			break
+
+	return result
