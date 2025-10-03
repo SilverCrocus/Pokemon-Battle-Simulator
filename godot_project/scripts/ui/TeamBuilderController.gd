@@ -269,12 +269,12 @@ func _on_pokemon_selected(pokemon_data) -> void:
 	# Setup stat sliders with Pokemon base stats
 	if stat_sliders:
 		var base_stats = {
-			"hp": pokemon_data.hp,
-			"atk": pokemon_data.attack,
-			"def": pokemon_data.defense,
-			"spa": pokemon_data.special_attack,
-			"spd": pokemon_data.special_defense,
-			"spe": pokemon_data.speed
+			"hp": pokemon_data.base_hp,
+			"atk": pokemon_data.base_atk,
+			"def": pokemon_data.base_def,
+			"spa": pokemon_data.base_spa,
+			"spd": pokemon_data.base_spd,
+			"spe": pokemon_data.base_spe
 		}
 		stat_sliders.setup(base_stats, int(level_spinbox.value), NATURES[nature_select.selected])
 
