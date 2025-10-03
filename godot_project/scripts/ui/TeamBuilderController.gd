@@ -21,6 +21,9 @@ const MoveSelectorScript = preload("res://scripts/ui/components/MoveSelector.gd"
 
 # ==================== Node References ====================
 
+# Top-level UI
+@onready var back_button: Button = $BackButton
+
 # Left Panel - Pokemon Browser
 @onready var search_bar: LineEdit = $MainContainer/LeftPanel/MarginContainer/VBoxContainer/SearchBar
 @onready var type_filter: OptionButton = $MainContainer/LeftPanel/MarginContainer/VBoxContainer/FilterContainer/TypeFilter
@@ -139,6 +142,8 @@ func _setup_move_selector() -> void:
 
 func _connect_signals() -> void:
 	"""Connect UI signals."""
+	back_button.pressed.connect(_on_back_pressed)
+
 	search_bar.text_changed.connect(_on_search_changed)
 	type_filter.item_selected.connect(_on_filter_changed)
 	gen_filter.item_selected.connect(_on_filter_changed)
@@ -532,7 +537,7 @@ func _on_save_team_pressed() -> void:
 			"nature": pokemon.nature,
 			"ability": pokemon.ability.to_lower() if pokemon.ability else "",  # Normalize to lowercase
 			"item": pokemon.item,
-			"moves": pokemon.moves.map(func(m): return m.id),
+			"moves": pokemon.moves.map(func(m): return m.move_id),
 			"evs": pokemon.evs,
 			"ivs": pokemon.ivs
 		})
@@ -912,6 +917,15 @@ func _select_optimal_ability() -> void:
 	if not current_pokemon or ability_select.item_count == 0:
 		return
 
-	# For now, just select the first ability
-	# TODO: Add ability preference logic for specific Pokemon
+	# Select the first non-hidden ability (index 0)
+	# Hidden abilities are usually better but require special conditions
 	ability_select.selected = 0
+
+	# TODO: Add ability preference logic for specific Pokemon
+	# e.g., Speed Boost for Blaziken, Drought for Groudon, etc.
+
+
+func _on_back_pressed() -> void:
+	"""Navigate back to main menu."""
+	print("[TeamBuilder] Returning to Main Menu")
+	get_tree().change_scene_to_file("res://scenes/menu/MainMenuScene.tscn")

@@ -135,6 +135,12 @@ func get_move_by_name(move_name: String) -> MoveData:
 	while file_name != "":
 		if file_name.ends_with(".tres"):
 			var move_id = int(file_name.trim_suffix(".tres"))
+
+			# Skip corrupted files (10001-10018 range has parse errors)
+			if move_id >= 10001:
+				file_name = dir.get_next()
+				continue
+
 			var move_data = get_move(move_id)
 
 			if move_data and move_data.name.to_lower() == name_lower:

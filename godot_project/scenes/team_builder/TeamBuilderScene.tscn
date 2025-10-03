@@ -11,6 +11,14 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_controller")
 
+[node name="BackButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 150.0
+offset_bottom = 56.0
+text = "← Back to Menu"
+
 [node name="BackgroundLayer" type="CanvasLayer" parent="."]
 layer = -1
 
