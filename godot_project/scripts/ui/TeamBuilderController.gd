@@ -414,7 +414,15 @@ func _on_add_to_team_pressed() -> void:
 	# Get current customization
 	var level = int(level_spinbox.value)
 	var nature = NATURES[nature_select.selected]
-	var ability = ability_select.get_item_text(ability_select.selected)
+	var ability_text = ability_select.get_item_text(ability_select.selected)
+
+	# Extract ability name (remove "(Hidden)" suffix if present)
+	var ability = ability_text.trim_suffix(" (Hidden)") if ability_text.ends_with("(Hidden)") else ability_text
+
+	# If no valid ability, use first ability from species data
+	if ability == "No Ability" and current_pokemon.abilities.size() > 0:
+		ability = current_pokemon.abilities[0]
+
 	var nickname = nickname_edit.text if not nickname_edit.text.is_empty() else ""
 
 	# Get EVs and IVs from stat sliders
@@ -436,7 +444,7 @@ func _on_add_to_team_pressed() -> void:
 		evs,
 		nature,
 		moves_to_use,
-		ability if not ability.ends_with("(Hidden)") else ability.trim_suffix(" (Hidden)"),
+		ability,
 		"",  # No item for now
 		nickname
 	)
