@@ -396,6 +396,9 @@ func _on_autofill_pressed() -> void:
 		stat_sliders._update_all_sliders()
 		stat_sliders._update_stat_display()
 
+	# Reload abilities to ensure dropdown is populated
+	_load_abilities(current_pokemon)
+
 	# Select best ability (prefer hidden ability if it's better, otherwise first ability)
 	_select_optimal_ability()
 
@@ -819,13 +822,26 @@ func _get_fallback_moveset() -> Array:
 	for i in range(min(2, coverage_moves.size())):
 		result.append(coverage_moves[i].move)
 
-	# Fill remaining slots with any high power moves
-	while result.size() < 4 and coverage_moves.size() > result.size() - 2:
-		var idx = result.size() - 2
-		if idx < coverage_moves.size():
-			result.append(coverage_moves[idx].move)
-		else:
-			break
+	# If we still need more moves, add any remaining STAB moves
+	var stab_index = 2
+	while result.size() < 4 and stab_index < stab_moves.size():
+		result.append(stab_moves[stab_index].move)
+		stab_index += 1
+
+	# If still need more, add any remaining coverage moves
+	var coverage_index = 2
+	while result.size() < 4 and coverage_index < coverage_moves.size():
+		result.append(coverage_moves[coverage_index].move)
+		coverage_index += 1
+
+	# Last resort: add any available move from learnset
+	if result.size() < 4:
+		for move_name in current_pokemon.learnset.keys():
+			if result.size() >= 4:
+				break
+			var move_identifier = move_name.to_lower().replace(" ", "-")
+			if move_identifier not in result:
+				result.append(move_identifier)
 
 	return result
 
